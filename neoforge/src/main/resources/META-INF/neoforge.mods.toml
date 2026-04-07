@@ -1,0 +1,17 @@
+modLoader = "javafml"
+loaderVersion = "[2,)"
+issueTrackerURL = "https://github.com/CoolAid48/Optical/issues"
+license = "MIT"
+
+[[mods]]
+modId = "optical"
+version = "${version}"
+displayName = "Optical"
+authors = "CoolAid48"
+description = '''
+An assortment of camera utilities that gives you full control over your perspectives
+'''
+#logoFile = ""
+
+[[mixins]]
+config = "optical.mixins.json"
