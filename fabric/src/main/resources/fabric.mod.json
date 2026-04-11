@@ -3,7 +3,7 @@
   "id": "optical",
   "version": "${version}",
   "name": "Optical",
-  "description": "An assortment of camera utilities that gives you full control over your perspectives",
+  "description": "An assortment of utilities that gives you full control over your camera perspectives",
   "authors": [
     "CoolAid48"
   ],
@@ -16,11 +16,11 @@
   "icon": "assets/optical/icon.png",
   "environment": "*",
   "entrypoints": {
-    "main": [
-      "me.coolaid.optical.fabric.OpticalFabric"
-    ],
     "client": [
       "me.coolaid.optical.fabric.client.OpticalFabricClient"
+    ],
+    "modmenu": [
+      "me.coolaid.optical.fabric.client.ModMenuIntegration"
     ]
   },
   "mixins": [
@@ -34,7 +34,7 @@
   "custom": {
     "modmenu": {
       "links": {
-        "modmenu.donate" : "https://ko-fi.com/coolaid48",
+        "modmenu.donate": "https://ko-fi.com/coolaid48",
         "modmenu.discord": "https://discord.gg/J2SGshKNah",
         "modmenu.modrinth": "https://modrinth.com/mod/optical"
       }

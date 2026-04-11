@@ -9,7 +9,7 @@ version = "${version}"
 displayName = "Optical"
 authors = "CoolAid48"
 description = '''
-An assortment of camera utilities that gives you full control over your perspectives
+An assortment of utilities that gives you full control over your camera perspectives
 '''
 #logoFile = ""
 

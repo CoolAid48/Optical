@@ -1,0 +1,8 @@
+{
+  "optical.config.title": "Optical Settings",
+  "optical.configCategory.general": "General Settings",
+  "optical.configCategory.freelook": "Freelook Settings",
+  "optical.configCategory.freecam": "Freecam Settings",
+  "optical.configCategory.zoom": "Zoom Settings",
+  "optical.configCategory.gamma": "Gamma Settings"
+}
