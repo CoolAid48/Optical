@@ -1,18 +1,13 @@
 package me.coolaid.optical;
 
-import me.coolaid.optical.config.Config;
+import me.coolaid.optical.config.OpticalConfig;
 import net.minecraft.client.CameraType;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.util.Mth;
 
-public class Freelook {
-    private static final float TURN_FACTOR = 0.15F;
-
-    private static boolean active;
-    private static float cameraYaw;
-    private static float cameraPitch;
-    private static CameraType previousCameraType = CameraType.FIRST_PERSON;
+public final class Freelook {
+    private static boolean active = false;
+    private static CameraType lastPerspective;
+    private static CameraType freeLookPerspective;
 
     private Freelook() {
     }
@@ -22,66 +17,51 @@ public class Freelook {
     }
 
     public static void updateFromKeyState(Minecraft minecraft, boolean keyDown) {
-        if (!Config.FREELOOK.isEnabled()) {
+        if (!OpticalConfig.FREELOOK.isEnabled()) {
             deactivate(minecraft);
             return;
         }
-
-        if (Config.FREELOOK.isToggleMode()) {
+        if (OpticalConfig.FREELOOK.isToggleMode()) {
             return;
         }
-
         if (keyDown) {
-            activate(minecraft);
+            activate(minecraft, CameraType.THIRD_PERSON_BACK);
         } else {
             deactivate(minecraft);
         }
     }
 
-    public static boolean consumeTurn(LocalPlayer player, double yawDelta, double pitchDelta) {
-        if (!active) {
-            return false;
+    public static void toggle(Minecraft minecraft) {
+        if (!OpticalConfig.FREELOOK.isEnabled()) {
+            return;
         }
-
-        float sensitivity = (float) Config.FREELOOK.getSensitivityMultiplier();
-        float yawChange = (float) yawDelta * TURN_FACTOR * sensitivity;
-        float pitchChange = (float) pitchDelta * TURN_FACTOR * sensitivity;
-
-        cameraYaw += yawChange;
-        cameraPitch += Config.FREELOOK.isInvertY() ? pitchChange : -pitchChange;
-        cameraPitch = Mth.clamp(cameraPitch, -90.0F, 90.0F);
-
-        player.setYRot(player.getYRot());
-        player.setXRot(player.getXRot());
-        return true;
-    }
-
-    public static float getCameraYaw(float fallback) {
-        return active ? cameraYaw : fallback;
-    }
-
-    public static float getCameraPitch(float fallback) {
-        return active ? cameraPitch : fallback;
+        if (active) {
+            deactivate(minecraft);
+        } else {
+            activate(minecraft, CameraType.THIRD_PERSON_BACK);
+        }
     }
 
     public static void onClientCleanup(Minecraft minecraft) {
-        if (minecraft.player == null || minecraft.level == null){
-            deactivate(minecraft);
+        if (active && (minecraft.player == null || minecraft.level == null)) {
+            active = false;
+            freeLookPerspective = null;
         }
     }
 
-    private static void activate(Minecraft minecraft) {
+    private static void activate(Minecraft minecraft, CameraType requestedPerspective) {
         if (active || minecraft.player == null) {
             return;
         }
-
         active = true;
-        previousCameraType = minecraft.options.getCameraType();
-        cameraYaw = minecraft.player.getYRot();
-        cameraPitch = minecraft.player.getXRot();
-
-        if (!previousCameraType.isMirrored()) {
-            minecraft.options.setCameraType(CameraType.THIRD_PERSON_BACK);
+        lastPerspective = minecraft.options.getCameraType();
+        freeLookPerspective = requestedPerspective;
+        if (minecraft.player instanceof CameraOverriddenEntity cameraEntity) {
+            cameraEntity.optical$setCameraYaw(minecraft.player.getYRot());
+            cameraEntity.optical$setCameraPitch(minecraft.player.getXRot());
+        }
+        if (lastPerspective == CameraType.FIRST_PERSON) {
+            minecraft.options.setCameraType(requestedPerspective);
         }
     }
 
@@ -89,10 +69,14 @@ public class Freelook {
         if (!active) {
             return;
         }
-
         active = false;
-        if (minecraft.options.getCameraType() != previousCameraType) {
-            minecraft.options.setCameraType(previousCameraType);
+        freeLookPerspective = null;
+        if (minecraft.options.getCameraType() != lastPerspective) {
+            minecraft.options.setCameraType(lastPerspective);
         }
+    }
+
+    public static CameraType getFreeLookPerspective() {
+        return freeLookPerspective;
     }
 }
