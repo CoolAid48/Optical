@@ -6,8 +6,12 @@
 ### An assortment of utilities that gives you full control over your camera perspectives!
 
 ## More Details Below:
-- Freelook, Freecam, Gamma, and zoom functionality
-- Functions fully client-side
+- **Freelook: allows you to rotate your camera around the player while moving**
+- **Freecam: gives you access to control your camera completely independent of the player**
+- **Zoom: functionality which lets you simply zoom in and adjust the zoom with your scroll wheel**
+- **Brightness: tweaks that allow you to dynamically change your in-game brightness (Fullbright)**
+- **Highly customizable config to toggle each feature, and includes configurable settings for everything**
+- **Works fully client-side, please be aware of some conflicts with rules on multiplayer servers!**
 
 #### Any bugs or issues, please make a report on [GitHub](https://github.com/CoolAid48/Optical/issues)
 

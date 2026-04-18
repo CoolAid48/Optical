@@ -2,43 +2,96 @@ package me.coolaid.optical;
 
 import me.coolaid.optical.config.OpticalConfig;
 import net.minecraft.client.Minecraft;
-import net.minecraft.util.Mth;
+import net.minecraft.network.chat.Component;
+import net.minecraft.ChatFormatting;
 
 public final class Brightness {
+    private static Integer currentGamma;
 
     private Brightness() {
     }
 
     public static void onClientTick(Minecraft minecraft) {
+        if (minecraft == null) {
+            return;
+        }
+
+        ensureCurrentValueInitialized();
+
         if (!OpticalConfig.BRIGHTNESS.isEnabled()) {
+            currentGamma = OpticalConfig.BRIGHTNESS.getDefaultLevel();
             return;
         }
 
         while (OpticalBindings.TOGGLE_BRIGHTNESS.consumeClick()) {
             OpticalConfig.BRIGHTNESS.setToggled(!OpticalConfig.BRIGHTNESS.isToggled());
+            if (!OpticalConfig.BRIGHTNESS.isToggled()) {
+                currentGamma = OpticalConfig.BRIGHTNESS.getDefaultLevel();
+            }
+            showGammaMessage(minecraft);
         }
 
         while (OpticalBindings.INCREASE_BRIGHTNESS.consumeClick()) {
-            adjustGamma(10);
+            adjustGamma(OpticalConfig.BRIGHTNESS.getGammaStep());
+            showGammaMessage(minecraft);
         }
 
         while (OpticalBindings.DECREASE_BRIGHTNESS.consumeClick()) {
-            adjustGamma(-10);
+            adjustGamma(-OpticalConfig.BRIGHTNESS.getGammaStep());
+            showGammaMessage(minecraft);
         }
+
+        currentGamma = getTargetGamma();
     }
 
     private static void adjustGamma(int amount) {
+        ensureCurrentValueInitialized();
         if (OpticalConfig.BRIGHTNESS.isToggled()) {
             int current = OpticalConfig.BRIGHTNESS.getToggledLevel();
-            OpticalConfig.BRIGHTNESS.setToggledLevel(Mth.clamp(current + amount, -750, 1500));
+            int updated = OpticalConfig.BRIGHTNESS.clampToRange(current + amount);
+            currentGamma = updated;
+            if (OpticalConfig.BRIGHTNESS.isUpdateToggleValue()) {
+                OpticalConfig.BRIGHTNESS.setToggledLevel(updated);
+            }
         } else {
             int current = OpticalConfig.BRIGHTNESS.getDefaultLevel();
-            OpticalConfig.BRIGHTNESS.setDefaultLevel(Mth.clamp(current + amount, -750, 1500));
+            int updated = OpticalConfig.BRIGHTNESS.clampToRange(current + amount);
+            OpticalConfig.BRIGHTNESS.setDefaultLevel(updated);
+            currentGamma = updated;
         }
     }
 
     public static double getCurrentGamma() {
+        ensureCurrentValueInitialized();
+        return currentGamma / 100.0D;
+    }
+
+    private static int getTargetGamma() {
+        return OpticalConfig.BRIGHTNESS.isToggled() ? OpticalConfig.BRIGHTNESS.getToggledLevel() : OpticalConfig.BRIGHTNESS.getDefaultLevel();
+    }
+
+    private static void ensureCurrentValueInitialized() {
+        if (currentGamma == null) {
+            currentGamma = OpticalConfig.BRIGHTNESS.getDefaultLevel();
+        }
+    }
+
+    private static void showGammaMessage(Minecraft minecraft) {
+        if (!OpticalConfig.BRIGHTNESS.isShowGammaMessage() || minecraft.player == null) {
+            return;
+        }
         int level = OpticalConfig.BRIGHTNESS.isToggled() ? OpticalConfig.BRIGHTNESS.getToggledLevel() : OpticalConfig.BRIGHTNESS.getDefaultLevel();
-        return level / 100.0D;
+        Component value = Component.literal(level + "%").withStyle(getGammaColor(level));
+        minecraft.player.sendOverlayMessage(Component.translatable("optical.brightness.message", value));
+    }
+
+    private static ChatFormatting getGammaColor(int level) {
+        if (level < 0) {
+            return ChatFormatting.RED;
+        }
+        if (level <= 100) {
+            return ChatFormatting.GREEN;
+        }
+        return ChatFormatting.GOLD;
     }
 }

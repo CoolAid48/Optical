@@ -14,13 +14,7 @@ public final class OpticalConfig {
         private boolean toggleMode = false;
         private boolean invertY = false;
         private double sensitivityMultiplier = 1.0D;
-        private Style style = Style.CLASSIC;
         private int rotationLimit = 360;
-
-        public enum Style {
-            CLASSIC,
-            BETTER
-        }
 
         public boolean isEnabled() { return this.enabled; }
         public void setEnabled(boolean enabled) { this.enabled = enabled; }
@@ -30,9 +24,6 @@ public final class OpticalConfig {
         public void setInvertY(boolean invertY) { this.invertY = invertY; }
         public double getSensitivityMultiplier() { return this.sensitivityMultiplier; }
         public void setSensitivityMultiplier(double sensitivityMultiplier) { this.sensitivityMultiplier = sensitivityMultiplier; }
-        public Style getStyle() { return this.style; }
-        public void setStyle(Style style) { this.style = style; }
-        public boolean isBetterStyle() { return this.style == Style.BETTER; }
         public int getRotationLimit() { return this.rotationLimit; }
         public void setRotationLimit(int rotationLimit) { this.rotationLimit = rotationLimit; }
     }
@@ -42,14 +33,26 @@ public final class OpticalConfig {
         private boolean toggled = false;
         private int defaultLevel = 100;
         private int toggledLevel = 1500;
+        private boolean updateToggleValue = true;
+        private int gammaStep = 10;
+        private boolean showGammaMessage = true;
 
         public boolean isEnabled() { return this.enabled; }
         public void setEnabled(boolean enabled) { this.enabled = enabled; }
         public boolean isToggled() { return this.toggled; }
         public void setToggled(boolean toggled) { this.toggled = toggled; }
         public int getDefaultLevel() { return this.defaultLevel; }
-        public void setDefaultLevel(int defaultLevel) { this.defaultLevel = Mth.clamp(defaultLevel, -750, 1500); }
+        public void setDefaultLevel(int defaultLevel) { this.defaultLevel = clampToRange(defaultLevel); }
         public int getToggledLevel() { return this.toggledLevel; }
-        public void setToggledLevel(int toggledLevel) { this.toggledLevel = Mth.clamp(toggledLevel, -750, 1500); }
+        public void setToggledLevel(int toggledLevel) { this.toggledLevel = clampToRange(toggledLevel); }
+        public boolean isUpdateToggleValue() { return this.updateToggleValue; }
+        public void setUpdateToggleValue(boolean updateToggleValue) { this.updateToggleValue = updateToggleValue; }
+        public int getGammaStep() { return this.gammaStep; }
+        public void setGammaStep(int gammaStep) { this.gammaStep = Mth.clamp(gammaStep, 1, 1000); }
+        public boolean isShowGammaMessage() { return this.showGammaMessage; }
+        public void setShowGammaMessage(boolean showGammaMessage) { this.showGammaMessage = showGammaMessage; }
+        public int clampToRange(int value) {
+            return Mth.clamp(value, -750, 1500);
+        }
     }
 }

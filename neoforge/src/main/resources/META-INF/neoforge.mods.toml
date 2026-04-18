@@ -11,7 +11,7 @@ authors = "CoolAid48"
 description = '''
 An assortment of utilities that gives you full control over your camera perspectives
 '''
-#logoFile = ""
+logoFile = "assets/optical/icon.png"
 
 [[mixins]]
 config = "optical.mixins.json"

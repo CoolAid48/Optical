@@ -18,27 +18,26 @@
   "optical.freelook.option.invert.desc": "Enable to look down when pulling mouse down.",
   "optical.freelook.option.toggle_mode": "Activation Mode",
   "optical.freelook.option.toggle_mode.desc": "Choose whether to press the key or hold it to toggle.",
-  "optical.freelook.option.style": "Freelook Style",
-  "optical.freelook.option.style.desc": "Classic: Camera rotates the player.\nBetter Third Person: Player turns with the camera movement.",
   "optical.freelook.option.sensitivity": "Rotation Sensitivity",
   "optical.freelook.option.sensitivity.desc": "Adjust the camera rotation speed.",
   "optical.freelook.option.limit": "Head Rotation Limit",
   "optical.freelook.option.limit.desc": "Limit how far the camera can rotate around the player.",
-
   "optical.freelook.value.toggle": "Toggle",
   "optical.freelook.value.hold": "Hold",
-  "optical.freelook.value.classic": "Classic",
-  "optical.freelook.value.better_third_person": "Better Third Person",
-
 
   "optical.brightness.option.brightness_core": "Brightness Activation",
   "optical.brightness.option.brightness_levels": "Brightness Levels",
   "optical.brightness.option.enabled": "Enable Brightness Tweaks",
   "optical.brightness.option.enabled.desc": "Turns the entire Brightness module on or off.",
-  "optical.brightness.option.toggled_state": "Currently Toggled",
-  "optical.brightness.option.toggled_state.desc": "Manually switch between Default and Toggled levels.",
-  "optical.brightness.option.default": "Default Gamma",
-  "optical.brightness.option.default.desc": "The normal brightness level (100% is vanilla default).",
-  "optical.brightness.option.toggled": "Toggled Gamma",
-  "optical.brightness.option.toggled.desc": "The brightness level used when the toggle key is active."
+  "optical.brightness.option.default": "Default Brightness",
+  "optical.brightness.option.default.desc": "The normal brightness level (100% is vanilla's default).",
+  "optical.brightness.option.toggled": "Toggled Brightness",
+  "optical.brightness.option.toggled.desc": "The brightness level used when the toggle key is active.",
+  "optical.brightness.option.step": "Brightness Step",
+  "optical.brightness.option.step.desc": "How much brightness changes per key press.",
+  "optical.brightness.option.update_toggle_value": "Update Toggle Value",
+  "optical.brightness.option.update_toggle_value.desc": "While toggled on, key adjustments update the saved toggled gamma.",
+  "optical.brightness.option.show_message": "Show Overlay Message",
+  "optical.brightness.option.show_message.desc": "Show the active brightness percentage when changed.",
+  "optical.brightness.message": "Brightness: %s"
 }

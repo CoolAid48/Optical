@@ -3,7 +3,6 @@ package me.coolaid.optical.config;
 import dev.isxander.yacl3.api.*;
 import dev.isxander.yacl3.api.controller.BooleanControllerBuilder;
 import dev.isxander.yacl3.api.controller.DoubleSliderControllerBuilder;
-import dev.isxander.yacl3.api.controller.EnumControllerBuilder;
 import dev.isxander.yacl3.api.controller.IntegerSliderControllerBuilder;
 import dev.isxander.yacl3.api.controller.IntegerFieldControllerBuilder;
 import dev.isxander.yacl3.api.controller.TickBoxControllerBuilder;
@@ -19,6 +18,8 @@ public class ConfigScreen {
         return YetAnotherConfigLib.createBuilder()
                 .title(Component.translatable("optical.config.title"))
 
+                .category(ConfigCategory.createBuilder().name(Component.translatable("optical.category.general")).build())
+
                 .category(ConfigCategory.createBuilder()
                         .name(Component.translatable("optical.category.freelook"))
                         .option(Option.<Boolean>createBuilder()
@@ -28,17 +29,17 @@ public class ConfigScreen {
                                 .controller(TickBoxControllerBuilder::create)
                                 .build())
                         .option(Option.<Boolean>createBuilder()
+                                .name(Component.translatable("optical.freelook.option.invert"))
+                                .description(OptionDescription.of(Component.translatable("optical.freelook.option.invert.desc")))
+                                .binding(true, OpticalConfig.FREELOOK::isInvertY, OpticalConfig.FREELOOK::setInvertY)
+                                .controller(TickBoxControllerBuilder::create)
+                                .build())
+                        .option(Option.<Boolean>createBuilder()
                                 .name(Component.translatable("optical.freelook.option.toggle_mode"))
                                 .description(OptionDescription.of(Component.translatable("optical.freelook.option.toggle_mode.desc")))
                                 .binding(false, OpticalConfig.FREELOOK::isToggleMode, OpticalConfig.FREELOOK::setToggleMode)
                                 .controller(opt -> BooleanControllerBuilder.create(opt)
                                         .formatValue(val -> val ? Component.translatable("optical.freelook.value.toggle") : Component.translatable("optical.freelook.value.hold")))
-                                .build())
-                        .option(Option.<Boolean>createBuilder()
-                                .name(Component.translatable("optical.freelook.option.invert"))
-                                .description(OptionDescription.of(Component.translatable("optical.freelook.option.invert.desc")))
-                                .binding(true, OpticalConfig.FREELOOK::isInvertY, OpticalConfig.FREELOOK::setInvertY)
-                                .controller(TickBoxControllerBuilder::create)
                                 .build())
                         .option(Option.<Double>createBuilder()
                                 .name(Component.translatable("optical.freelook.option.sensitivity"))
@@ -58,18 +59,14 @@ public class ConfigScreen {
                                         .step(1)
                                         .formatValue(index -> {
                                             int value = LIMITS.get(index);
-                                            return Component.literal(value == 360 ? "360°" : value + "°");
+                                            return Component.literal(value == 360 ? "360° (Full)" : value + "°");
                                         }))
                                 .build())
-                        .option(Option.<OpticalConfig.FreelookConfig.Style>createBuilder()
-                                .name(Component.translatable("optical.freelook.option.style"))
-                                .description(OptionDescription.of(Component.translatable("optical.freelook.option.style.desc")))
-                                .binding(OpticalConfig.FreelookConfig.Style.CLASSIC, OpticalConfig.FREELOOK::getStyle, OpticalConfig.FREELOOK::setStyle)
-                                .controller(opt -> EnumControllerBuilder.create(opt)
-                                        .enumClass(OpticalConfig.FreelookConfig.Style.class)
-                                        .formatValue(val -> Component.translatable("optical.value.style." + val.name().toLowerCase())))
-                                .build())
                         .build())
+
+                .category(ConfigCategory.createBuilder().name(Component.translatable("optical.category.freecam")).build())
+
+                .category(ConfigCategory.createBuilder().name(Component.translatable("optical.category.zoom")).build())
 
                 .category(ConfigCategory.createBuilder()
                         .name(Component.translatable("optical.category.brightness"))
@@ -77,12 +74,6 @@ public class ConfigScreen {
                                 .name(Component.translatable("optical.brightness.option.enabled"))
                                 .description(OptionDescription.of(Component.translatable("optical.brightness.option.enabled.desc")))
                                 .binding(true, OpticalConfig.BRIGHTNESS::isEnabled, OpticalConfig.BRIGHTNESS::setEnabled)
-                                .controller(TickBoxControllerBuilder::create)
-                                .build())
-                        .option(Option.<Boolean>createBuilder()
-                                .name(Component.translatable("optical.brightness.option.toggled_state"))
-                                .description(OptionDescription.of(Component.translatable("optical.brightness.option.toggled_state.desc")))
-                                .binding(false, OpticalConfig.BRIGHTNESS::isToggled, OpticalConfig.BRIGHTNESS::setToggled)
                                 .controller(TickBoxControllerBuilder::create)
                                 .build())
                         .option(Option.<Integer>createBuilder()
@@ -97,12 +88,25 @@ public class ConfigScreen {
                                 .binding(1500, OpticalConfig.BRIGHTNESS::getToggledLevel, OpticalConfig.BRIGHTNESS::setToggledLevel)
                                 .controller(IntegerFieldControllerBuilder::create)
                                 .build())
+                        .option(Option.<Integer>createBuilder()
+                                .name(Component.translatable("optical.brightness.option.step"))
+                                .description(OptionDescription.of(Component.translatable("optical.brightness.option.step.desc")))
+                                .binding(10, OpticalConfig.BRIGHTNESS::getGammaStep, OpticalConfig.BRIGHTNESS::setGammaStep)
+                                .controller(IntegerFieldControllerBuilder::create)
+                                .build())
+                        .option(Option.<Boolean>createBuilder()
+                                .name(Component.translatable("optical.brightness.option.update_toggle_value"))
+                                .description(OptionDescription.of(Component.translatable("optical.brightness.option.update_toggle_value.desc")))
+                                .binding(true, OpticalConfig.BRIGHTNESS::isUpdateToggleValue, OpticalConfig.BRIGHTNESS::setUpdateToggleValue)
+                                .controller(TickBoxControllerBuilder::create)
+                                .build())
+                        .option(Option.<Boolean>createBuilder()
+                                .name(Component.translatable("optical.brightness.option.show_message"))
+                                .description(OptionDescription.of(Component.translatable("optical.brightness.option.show_message.desc")))
+                                .binding(true, OpticalConfig.BRIGHTNESS::isShowGammaMessage, OpticalConfig.BRIGHTNESS::setShowGammaMessage)
+                                .controller(TickBoxControllerBuilder::create)
+                                .build())
                         .build())
-
-                // Empty Categories
-                .category(ConfigCategory.createBuilder().name(Component.translatable("optical.category.general")).build())
-                .category(ConfigCategory.createBuilder().name(Component.translatable("optical.category.freecam")).build())
-                .category(ConfigCategory.createBuilder().name(Component.translatable("optical.category.zoom")).build())
 
                 .build()
                 .generateScreen(parent);

@@ -6,7 +6,6 @@
   "client": [
     "CameraMixin",
     "EntityMixin",
-    "LocalPlayerMixin",
     "OptionInstanceMixin"
   ],
   "injectors": {
