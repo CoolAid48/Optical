@@ -4,6 +4,11 @@
   "key.optical.brightness.toggle": "Toggle Brightness",
   "key.optical.brightness.increase": "Increase Brightness",
   "key.optical.brightness.decrease": "Decrease Brightness",
+  "key.optical.freecam.toggle": "Toggle Freecam",
+  "key.optical.freecam.momentum": "Toggle Freecam Momentum",
+  "key.optical.freecam.tripod_1": "Freecam Tripod 1",
+  "key.optical.freecam.tripod_2": "Freecam Tripod 2",
+  "key.optical.freecam.tripod_3": "Freecam Tripod 3",
 
   "optical.config.title": "Optical Configuration",
   "optical.category.general": "General",
@@ -39,5 +44,22 @@
   "optical.brightness.option.update_toggle_value.desc": "While toggled on, key adjustments update the saved toggled gamma.",
   "optical.brightness.option.show_message": "Show Overlay Message",
   "optical.brightness.option.show_message.desc": "Show the active brightness percentage when changed.",
-  "optical.brightness.message": "Brightness: %s"
+  "optical.brightness.message": "Brightness: %s",
+
+  "optical.freecam.option.enabled": "Enable Freecam",
+  "optical.freecam.option.enabled.desc": "Toggle detached freecam mode on and off.",
+  "optical.freecam.option.invert": "Invert Y-axis",
+  "optical.freecam.option.invert.desc": "Enable to look down when pulling mouse down.",
+  "optical.freecam.option.sensitivity": "Look Sensitivity",
+  "optical.freecam.option.sensitivity.desc": "Adjust freecam mouse look speed.",
+  "optical.freecam.option.momentum_default": "Momentum Default",
+  "optical.freecam.option.momentum_default.desc": "Start freecam with momentum mode enabled.",
+  "optical.freecam.option.horizontal_speed": "Horizontal Speed",
+  "optical.freecam.option.horizontal_speed.desc": "Flight speed across X/Z axes.",
+  "optical.freecam.option.vertical_speed": "Vertical Speed",
+  "optical.freecam.option.vertical_speed.desc": "Flight speed for up/down movement.",
+  "optical.freecam.option.momentum_smoothing": "Momentum Smoothing",
+  "optical.freecam.option.momentum_smoothing.desc": "How quickly velocity approaches target speed in momentum mode.",
+  "optical.freecam.option.momentum_damping": "Momentum Damping",
+  "optical.freecam.option.momentum_damping.desc": "How much momentum remains when releasing movement keys."
 }

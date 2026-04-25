@@ -1,5 +1,6 @@
-package me.coolaid.optical;
+package me.coolaid.optical.logic;
 
+import me.coolaid.optical.OpticalBindings;
 import me.coolaid.optical.config.OpticalConfig;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;

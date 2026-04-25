@@ -1,6 +1,6 @@
 package me.coolaid.optical.mixin;
 
-import me.coolaid.optical.Brightness;
+import me.coolaid.optical.logic.Brightness;
 import me.coolaid.optical.config.OpticalConfig;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.OptionInstance;
