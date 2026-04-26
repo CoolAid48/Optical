@@ -5,6 +5,7 @@ import me.coolaid.optical.config.OpticalConfig;
 import me.coolaid.optical.logic.Brightness;
 import me.coolaid.optical.logic.Freecam;
 import me.coolaid.optical.logic.Freelook;
+import me.coolaid.optical.logic.Zoom;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keymapping.v1.KeyMappingHelper;
@@ -24,6 +25,8 @@ public final class OpticalFabricClient implements ClientModInitializer {
         KeyMappingHelper.registerKeyMapping(OpticalBindings.TOGGLE_BRIGHTNESS);
         KeyMappingHelper.registerKeyMapping(OpticalBindings.INCREASE_BRIGHTNESS);
         KeyMappingHelper.registerKeyMapping(OpticalBindings.DECREASE_BRIGHTNESS);
+        KeyMappingHelper.registerKeyMapping(OpticalBindings.ZOOM);
+        KeyMappingHelper.registerKeyMapping(OpticalBindings.SECONDARY_ZOOM);
 
         ClientTickEvents.END_CLIENT_TICK.register(OpticalFabricClient::onClientTick);
     }
@@ -66,5 +69,6 @@ public final class OpticalFabricClient implements ClientModInitializer {
 
         Freecam.onClientTick(minecraft);
         Brightness.onClientTick(minecraft);
+        Zoom.onClientTick(minecraft);
     }
 }

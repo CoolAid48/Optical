@@ -6,6 +6,7 @@ public final class OpticalConfig {
     public static final FreelookConfig FREELOOK = new FreelookConfig();
     public static final BrightnessConfig BRIGHTNESS = new BrightnessConfig();
     public static final FreecamConfig FREECAM = new FreecamConfig();
+    public static final ZoomConfig ZOOM = new ZoomConfig();
 
     private OpticalConfig() {
     }
@@ -82,6 +83,72 @@ public final class OpticalConfig {
         public void setShowGammaMessage(boolean showGammaMessage) { this.showGammaMessage = showGammaMessage; }
         public int clampToRange(int value) {
             return Mth.clamp(value, -750, 1500);
+        }
+    }
+
+    public static final class ZoomConfig {
+        public enum TransitionMode {
+            EXPONENTIAL,
+            INSTANT
+        }
+
+        private boolean enabled = true;
+        private boolean scrollAdjustEnabled = true;
+        private boolean rememberZoomSteps = false;
+        private double defaultZoomStrength = 3.0D;
+        private double secondaryZoomStrength = 1.8D;
+        private int scrollStepCount = 10;
+        private double zoomPerStep = 1.5D;
+        private int scrollZoomSmoothness = 70;
+        private double zoomInSeconds = 1.0D;
+        private double zoomOutSeconds = 0.5D;
+        private double secondaryZoomInSeconds = 10.0D;
+        private double secondaryZoomOutSeconds = 1.0D;
+        private TransitionMode zoomInTransition = TransitionMode.EXPONENTIAL;
+        private TransitionMode zoomOutTransition = TransitionMode.EXPONENTIAL;
+
+        public boolean isEnabled() { return this.enabled; }
+        public void setEnabled(boolean enabled) { this.enabled = enabled; }
+        public boolean isScrollAdjustEnabled() { return this.scrollAdjustEnabled; }
+        public void setScrollAdjustEnabled(boolean scrollAdjustEnabled) { this.scrollAdjustEnabled = scrollAdjustEnabled; }
+        public boolean isRememberZoomSteps() { return this.rememberZoomSteps; }
+        public void setRememberZoomSteps(boolean rememberZoomSteps) { this.rememberZoomSteps = rememberZoomSteps; }
+        public double getDefaultZoomStrength() { return this.defaultZoomStrength; }
+        public void setDefaultZoomStrength(double defaultZoomStrength) {
+            this.defaultZoomStrength = Mth.clamp(defaultZoomStrength, 1.0D, 4.0D);
+        }
+        public double getSecondaryZoomStrength() { return this.secondaryZoomStrength; }
+        public void setSecondaryZoomStrength(double secondaryZoomStrength) {
+            this.secondaryZoomStrength = Mth.clamp(secondaryZoomStrength, 1.0D, 10.0D);
+        }
+        public int getScrollStepCount() { return this.scrollStepCount; }
+        public void setScrollStepCount(int scrollStepCount) { this.scrollStepCount = Mth.clamp(scrollStepCount, 1, 50); }
+        public double getZoomPerStep() { return this.zoomPerStep; }
+        public void setZoomPerStep(double zoomPerStep) { this.zoomPerStep = Mth.clamp(zoomPerStep, 1.05D, 3.0D); }
+        public int getScrollZoomSmoothness() { return this.scrollZoomSmoothness; }
+        public void setScrollZoomSmoothness(int scrollZoomSmoothness) { this.scrollZoomSmoothness = Mth.clamp(scrollZoomSmoothness, 0, 100); }
+        public double getZoomInSeconds() { return this.zoomInSeconds; }
+        public void setZoomInSeconds(double zoomInSeconds) { this.zoomInSeconds = Mth.clamp(zoomInSeconds, 0.1D, 5.0D); }
+        public double getZoomOutSeconds() { return this.zoomOutSeconds; }
+        public void setZoomOutSeconds(double zoomOutSeconds) { this.zoomOutSeconds = Mth.clamp(zoomOutSeconds, 0.1D, 5.0D); }
+        public double getSecondaryZoomInSeconds() { return this.secondaryZoomInSeconds; }
+        public void setSecondaryZoomInSeconds(double secondaryZoomInSeconds) {
+            this.secondaryZoomInSeconds = Mth.clamp(secondaryZoomInSeconds, 0.1D, 60.0D);
+        }
+        public double getSecondaryZoomOutSeconds() { return this.secondaryZoomOutSeconds; }
+        public void setSecondaryZoomOutSeconds(double secondaryZoomOutSeconds) {
+            this.secondaryZoomOutSeconds = Mth.clamp(secondaryZoomOutSeconds, 0.1D, 60.0D);
+        }
+        public TransitionMode getZoomInTransition() { return this.zoomInTransition; }
+        public void setZoomInTransition(TransitionMode zoomInTransition) {
+            this.zoomInTransition = zoomInTransition == null ? TransitionMode.EXPONENTIAL : zoomInTransition;
+        }
+        public TransitionMode getZoomOutTransition() { return this.zoomOutTransition; }
+        public void setZoomOutTransition(TransitionMode zoomOutTransition) {
+            this.zoomOutTransition = zoomOutTransition == null ? TransitionMode.EXPONENTIAL : zoomOutTransition;
+        }
+        public double clampStrength(double value) {
+            return Mth.clamp(value, 1.0D, 40.0D);
         }
     }
 }
