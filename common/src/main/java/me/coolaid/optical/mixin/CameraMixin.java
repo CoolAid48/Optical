@@ -1,6 +1,6 @@
 package me.coolaid.optical.mixin;
 
-import me.coolaid.optical.CameraOverriddenEntity;
+import me.coolaid.optical.util.CameraOverriddenEntity;
 import me.coolaid.optical.logic.Freecam;
 import me.coolaid.optical.logic.Freelook;
 import me.coolaid.optical.logic.Zoom;

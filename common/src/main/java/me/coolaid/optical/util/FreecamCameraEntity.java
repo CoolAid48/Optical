@@ -1,4 +1,4 @@
-package me.coolaid.optical.logic;
+package me.coolaid.optical.util;
 
 import com.mojang.authlib.GameProfile;
 import net.minecraft.client.Minecraft;

@@ -1,5 +1,6 @@
 package me.coolaid.optical.logic;
 
+import me.coolaid.optical.util.FreecamCameraEntity;
 import me.coolaid.optical.config.OpticalConfig;
 import net.minecraft.client.CameraType;
 import net.minecraft.client.Minecraft;

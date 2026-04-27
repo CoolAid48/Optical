@@ -17,6 +17,7 @@ public final class Brightness {
             return;
         }
 
+        OpticalConfig.ensureBrightnessLoaded();
         ensureCurrentValueInitialized();
 
         if (!OpticalConfig.BRIGHTNESS.isEnabled()) {
@@ -26,9 +27,9 @@ public final class Brightness {
 
         while (OpticalBindings.TOGGLE_BRIGHTNESS.consumeClick()) {
             OpticalConfig.BRIGHTNESS.setToggled(!OpticalConfig.BRIGHTNESS.isToggled());
-            if (!OpticalConfig.BRIGHTNESS.isToggled()) {
-                currentGamma = OpticalConfig.BRIGHTNESS.getDefaultLevel();
-            }
+            currentGamma = OpticalConfig.BRIGHTNESS.isToggled()
+                    ? OpticalConfig.BRIGHTNESS.getToggledLevel()
+                    : OpticalConfig.BRIGHTNESS.getDefaultLevel();
             showGammaMessage(minecraft);
         }
 
@@ -42,23 +43,29 @@ public final class Brightness {
             showGammaMessage(minecraft);
         }
 
-        currentGamma = getTargetGamma();
+        if (!OpticalConfig.BRIGHTNESS.isUpdateToggleValue()) {
+            currentGamma = OpticalConfig.BRIGHTNESS.clampToRange(currentGamma);
+        } else {
+            currentGamma = getTargetGamma();
+        }
     }
 
     private static void adjustGamma(int amount) {
         ensureCurrentValueInitialized();
         if (OpticalConfig.BRIGHTNESS.isToggled()) {
-            int current = OpticalConfig.BRIGHTNESS.getToggledLevel();
+            int current = OpticalConfig.BRIGHTNESS.isUpdateToggleValue() ? OpticalConfig.BRIGHTNESS.getToggledLevel() : currentGamma;
             int updated = OpticalConfig.BRIGHTNESS.clampToRange(current + amount);
             currentGamma = updated;
             if (OpticalConfig.BRIGHTNESS.isUpdateToggleValue()) {
                 OpticalConfig.BRIGHTNESS.setToggledLevel(updated);
             }
         } else {
-            int current = OpticalConfig.BRIGHTNESS.getDefaultLevel();
+            int current = OpticalConfig.BRIGHTNESS.isUpdateToggleValue() ? OpticalConfig.BRIGHTNESS.getDefaultLevel() : currentGamma;
             int updated = OpticalConfig.BRIGHTNESS.clampToRange(current + amount);
-            OpticalConfig.BRIGHTNESS.setDefaultLevel(updated);
             currentGamma = updated;
+            if (OpticalConfig.BRIGHTNESS.isUpdateToggleValue()) {
+                OpticalConfig.BRIGHTNESS.setDefaultLevel(updated);
+            }
         }
     }
 
@@ -81,9 +88,14 @@ public final class Brightness {
         if (!OpticalConfig.BRIGHTNESS.isShowGammaMessage() || minecraft.player == null) {
             return;
         }
-        int level = OpticalConfig.BRIGHTNESS.isToggled() ? OpticalConfig.BRIGHTNESS.getToggledLevel() : OpticalConfig.BRIGHTNESS.getDefaultLevel();
+        int level;
+        if (!OpticalConfig.BRIGHTNESS.isUpdateToggleValue()) {
+            level = currentGamma != null ? currentGamma : getTargetGamma();
+        } else {
+            level = OpticalConfig.BRIGHTNESS.isToggled() ? OpticalConfig.BRIGHTNESS.getToggledLevel() : OpticalConfig.BRIGHTNESS.getDefaultLevel();
+        }
         Component value = Component.literal(level + "%").withStyle(getGammaColor(level));
-        minecraft.player.sendOverlayMessage(Component.translatable("optical.brightness.message", value));
+        minecraft.player.sendOverlayMessage(Component.translatable("optical.gamma.message", value));
     }
 
     private static ChatFormatting getGammaColor(int level) {

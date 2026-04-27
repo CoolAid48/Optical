@@ -10,7 +10,6 @@ public final class Zoom {
     private static double currentZoomStrength = 1.0D;
     private static boolean secondaryZoomActive;
     private static int primaryScrollSteps;
-    private static int secondaryScrollSteps;
     private static boolean wasPrimaryZoomActive;
     private static boolean secondaryRecentlyDeactivated;
     private static long secondaryActivatedAtNanos = System.nanoTime();
@@ -18,6 +17,7 @@ public final class Zoom {
     private static double transitionTargetStrength = 1.0D;
     private static double transitionDurationSeconds = 0.0D;
     private static long transitionStartNanos = System.nanoTime();
+    private static boolean forcedHideGui;
 
     private Zoom() {
     }
@@ -28,6 +28,7 @@ public final class Zoom {
         }
 
         if (!OpticalConfig.ZOOM.isEnabled()) {
+            restoreHudVisibilityIfForced(minecraft);
             resetState();
             return;
         }
@@ -47,17 +48,12 @@ public final class Zoom {
             primaryScrollSteps = 0;
         }
 
-        if (!secondaryZoomActive) {
-            if (!OpticalConfig.ZOOM.isRememberZoomSteps()) {
-                secondaryScrollSteps = 0;
-            }
-        }
-
         wasPrimaryZoomActive = primaryActive;
+        syncHudVisibility(minecraft);
     }
 
     public static boolean handleScroll(double yOffset) {
-        if (!OpticalConfig.ZOOM.isEnabled() || !OpticalConfig.ZOOM.isScrollAdjustEnabled() || !isAnyZoomActive()) {
+        if (!OpticalConfig.ZOOM.isEnabled() || !OpticalConfig.ZOOM.isScrollAdjustEnabled() || !isPrimaryZoomActive()) {
             return false;
         }
 
@@ -66,12 +62,7 @@ public final class Zoom {
             return false;
         }
 
-        if (isSecondaryZoomActive()) {
-            secondaryScrollSteps = clampStepCount(secondaryScrollSteps + stepDelta);
-        } else if (isPrimaryZoomActive()) {
-            primaryScrollSteps = clampStepCount(primaryScrollSteps + stepDelta);
-        }
-
+        primaryScrollSteps = clampStepCount(primaryScrollSteps + stepDelta);
         return true;
     }
 
@@ -89,16 +80,32 @@ public final class Zoom {
         return OpticalConfig.ZOOM.isEnabled() && isSecondaryZoomActive();
     }
 
-    private static boolean isAnyZoomActive() {
-        return isPrimaryZoomActive() || isSecondaryZoomActive();
-    }
-
     private static boolean isPrimaryZoomActive() {
         return OpticalBindings.ZOOM.isDown();
     }
 
     private static boolean isSecondaryZoomActive() {
         return secondaryZoomActive;
+    }
+
+
+    private static void syncHudVisibility(Minecraft minecraft) {
+        if (shouldHideHud()) {
+            if (!minecraft.options.hideGui) {
+                minecraft.options.hideGui = true;
+                forcedHideGui = true;
+            }
+            return;
+        }
+
+        restoreHudVisibilityIfForced(minecraft);
+    }
+
+    private static void restoreHudVisibilityIfForced(Minecraft minecraft) {
+        if (forcedHideGui) {
+            minecraft.options.hideGui = false;
+            forcedHideGui = false;
+        }
     }
 
     private static void updateSmoothedStrength(double targetStrength) {
@@ -128,6 +135,7 @@ public final class Zoom {
             baseDuration = (!isSecondaryZoomActive() && secondaryRecentlyDeactivated)
                     ? OpticalConfig.ZOOM.getSecondaryZoomOutSeconds()
                     : OpticalConfig.ZOOM.getZoomOutSeconds();
+            baseDuration *= 0.85D;
         }
         if (Math.abs(targetStrength - transitionTargetStrength) > EPSILON) {
             transitionStartStrength = currentZoomStrength;
@@ -144,8 +152,8 @@ public final class Zoom {
 
     private static double getTargetStrength() {
         if (isSecondaryZoomActive()) {
-            double easedProgress = easeInOutCubic(getSecondaryInProgress());
-            double finalStrength = getSteppedStrength(OpticalConfig.ZOOM.getSecondaryZoomStrength(), secondaryScrollSteps);
+            double easedProgress = easeOutExponential(getSecondaryInProgress());
+            double finalStrength = OpticalConfig.ZOOM.getSecondaryZoomStrength();
             return lerp(1.0D, finalStrength, easedProgress);
         }
 
@@ -165,12 +173,11 @@ public final class Zoom {
         return Math.max(-maxSteps, Math.min(value, maxSteps));
     }
 
-    private static double easeInOutCubic(double value) {
-        if (value < 0.5D) {
-            return 4.0D * value * value * value;
+    private static double easeOutExponential(double value) {
+        if (value >= 1.0D) {
+            return 1.0D;
         }
-        double adjusted = -2.0D * value + 2.0D;
-        return 1.0D - (adjusted * adjusted * adjusted) / 2.0D;
+        return 1.0D - Math.pow(2.0D, -10.0D * value);
     }
 
     private static double lerp(double start, double end, double delta) {
@@ -184,8 +191,9 @@ public final class Zoom {
 
         double elapsed = Math.max(0.0D, (now - transitionStartNanos) / 1_000_000_000.0D);
         double progress = Math.min(1.0D, elapsed / transitionDurationSeconds);
-        double smoothness = OpticalConfig.ZOOM.getScrollZoomSmoothness() / 100.0D;
-        double easedProgress = lerp(progress, easeInOutCubic(progress), smoothness);
+        boolean zoomingOut = transitionTargetStrength < transitionStartStrength;
+        double smoothness = zoomingOut ? 1.0D : OpticalConfig.ZOOM.getScrollZoomSmoothness() / 100.0D;
+        double easedProgress = lerp(progress, easeOutExponential(progress), smoothness);
         return lerp(transitionStartStrength, transitionTargetStrength, easedProgress);
     }
 
@@ -204,7 +212,6 @@ public final class Zoom {
         currentZoomStrength = 1.0D;
         secondaryZoomActive = false;
         primaryScrollSteps = 0;
-        secondaryScrollSteps = 0;
         wasPrimaryZoomActive = false;
         secondaryRecentlyDeactivated = false;
         secondaryActivatedAtNanos = System.nanoTime();
@@ -212,5 +219,6 @@ public final class Zoom {
         transitionTargetStrength = 1.0D;
         transitionDurationSeconds = 0.0D;
         transitionStartNanos = System.nanoTime();
+        forcedHideGui = false;
     }
 }

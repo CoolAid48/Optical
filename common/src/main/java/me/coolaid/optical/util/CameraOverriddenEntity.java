@@ -1,4 +1,4 @@
-package me.coolaid.optical;
+package me.coolaid.optical.util;
 
 public interface CameraOverriddenEntity {
     float optical$getCameraPitch();
