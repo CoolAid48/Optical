@@ -7,11 +7,10 @@
   "key.optical.zoom.toggle": "Zoom",
   "key.optical.zoom.secondary": "Secondary Zoom",
   "key.optical.freecam.toggle": "Toggle Freecam",
-  "key.optical.freecam.momentum": "Toggle Freecam Momentum",
+  "key.optical.freecam.momentum": "Toggle Freecam Flight Mode",
   "key.optical.freecam.tripod_1": "Freecam Tripod 1",
   "key.optical.freecam.tripod_2": "Freecam Tripod 2",
   "key.optical.freecam.tripod_3": "Freecam Tripod 3",
-
   "optical.config.title": "Optical Configuration",
   "optical.category.general": "General",
   "optical.category.freecam": "Freecam",
@@ -19,7 +18,6 @@
   "optical.category.gamma": "Gamma Tweaks",
   "optical.general.group.misc": "Misc",
   "optical.general.group.freelook": "Freelook",
-
   "optical.freelook.option.enabled": "Enable Freelook",
   "optical.freelook.option.enabled.desc": "Toggle Freelook on and off.",
   "optical.freelook.option.invert": "Invert Y-axis",
@@ -32,7 +30,6 @@
   "optical.freelook.option.limit.desc": "Limit how far the camera can rotate around the player.",
   "optical.freelook.value.toggle": "Toggle",
   "optical.freelook.value.hold": "Hold",
-
   "optical.gamma.option.gamma_core": "Gamma Activation",
   "optical.gamma.option.gamma_levels": "Gamma Levels",
   "optical.gamma.option.enabled": "Enable Gamma Tweaks",
@@ -48,15 +45,12 @@
   "optical.gamma.option.show_message": "Show Overlay Message",
   "optical.gamma.option.show_message.desc": "Show the active gamma percentage when changed.",
   "optical.gamma.message": "Gamma: %s",
-
   "optical.freecam.option.enabled": "Enable Freecam",
   "optical.freecam.option.enabled.desc": "Toggle detached freecam mode on and off.",
   "optical.freecam.option.invert": "Invert Y-axis",
   "optical.freecam.option.invert.desc": "Enable to look down when pulling mouse down.",
   "optical.freecam.option.sensitivity": "Look Sensitivity",
   "optical.freecam.option.sensitivity.desc": "Adjust freecam mouse look speed.",
-  "optical.freecam.option.momentum_default": "Momentum Default",
-  "optical.freecam.option.momentum_default.desc": "Start freecam with momentum mode enabled.",
   "optical.freecam.option.horizontal_speed": "Horizontal Speed",
   "optical.freecam.option.horizontal_speed.desc": "Flight speed across X/Z axes.",
   "optical.freecam.option.vertical_speed": "Vertical Speed",
@@ -65,7 +59,6 @@
   "optical.freecam.option.momentum_smoothing.desc": "How quickly velocity approaches target speed in momentum mode.",
   "optical.freecam.option.momentum_damping": "Momentum Damping",
   "optical.freecam.option.momentum_damping.desc": "How much momentum remains when releasing movement keys.",
-
   "optical.zoom.group.basic": "Basic Settings",
   "optical.zoom.group.scrolling": "Scrolling",
   "optical.zoom.group.secondary": "Secondary Zoom",
@@ -98,5 +91,15 @@
   "optical.zoom.option.zoom_out_transition": "Zoom Out Transition",
   "optical.zoom.option.zoom_out_transition.desc": "Choose how zoom-out transitions are applied.",
   "optical.zoom.value.exponential": "Exponential",
-  "optical.zoom.value.instant": "Instant"
+  "optical.zoom.value.instant": "Instant",
+  "optical.freecam.option.flight_mode": "Flight Mode",
+  "optical.freecam.option.flight_mode.desc": "Choose between direct movement and creative-style momentum movement.",
+  "optical.freecam.value.flight_mode.default": "Default",
+  "optical.freecam.value.flight_mode.creative": "Creative Momentum",
+  "optical.freecam.option.show_player_name": "Show Detached Player Name",
+  "optical.freecam.option.show_player_name.desc": "Render your name tag while freecam is detached.",
+  "optical.freecam.option.show_player_hand": "Show Detached Player Hand",
+  "optical.freecam.option.show_player_hand.desc": "Render your first-person hand while freecam is detached.",
+  "optical.freecam.option.collision": "Enable Collision",
+  "optical.freecam.option.collision.desc": "Prevent detached freecam from moving through blocks."
 }

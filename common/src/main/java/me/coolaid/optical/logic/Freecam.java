@@ -1,20 +1,25 @@
 package me.coolaid.optical.logic;
 
-import me.coolaid.optical.util.FreecamCameraEntity;
 import me.coolaid.optical.config.OpticalConfig;
+import me.coolaid.optical.util.FreecamCameraEntity;
 import net.minecraft.client.CameraType;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.util.Mth;
+import net.minecraft.world.entity.MoverType;
 import net.minecraft.world.phys.Vec3;
 
 public final class Freecam {
+    public static final int DETACHED_PLAYER_VISUAL_ID = Integer.MAX_VALUE - 421;
+    private static final double CREATIVE_MOMENTUM_SMOOTHING = 0.10D;
+    private static final double CREATIVE_MOMENTUM_DAMPING = 0.94D;
+
     private static boolean active = false;
-    private static boolean momentumMode = false;
 
     private static CameraType lastPerspective;
     private static Vec3 velocity = Vec3.ZERO;
     private static FreecamCameraEntity cameraEntity;
+    private static FreecamCameraEntity detachedPlayerVisual;
 
     private static final Vec3[] TRIPOD_POSITIONS = new Vec3[3];
     private static final float[] TRIPOD_YAWS = new float[3];
@@ -25,6 +30,14 @@ public final class Freecam {
 
     public static boolean isActive() {
         return active;
+    }
+
+    public static boolean shouldRenderPlayerName() {
+        return OpticalConfig.FREECAM.isShowDetachedPlayerName();
+    }
+
+    public static boolean shouldRenderPlayerHand() {
+        return OpticalConfig.FREECAM.isShowDetachedPlayerHand();
     }
 
     public static Vec3 getPosition() {
@@ -44,15 +57,14 @@ public final class Freecam {
             return;
         }
 
-        float sensitivity = (float) OpticalConfig.FREECAM.getSensitivityMultiplier();
-        float pitchDelta = (float) (yDelta * 0.15F * sensitivity);
-        float yawDelta = (float) (xDelta * 0.15F * sensitivity);
+        float pitchDelta = (float) (yDelta * 0.15F);
+        float yawDelta = (float) (xDelta * 0.15F);
 
         float pitch = cameraEntity.getXRot();
         if (OpticalConfig.FREECAM.isInvertY()) {
-            pitch = Mth.clamp(pitch + pitchDelta, -90.0f, 90.0f);
-        } else {
             pitch = Mth.clamp(pitch - pitchDelta, -90.0f, 90.0f);
+        } else {
+            pitch = Mth.clamp(pitch + pitchDelta, -90.0f, 90.0f);
         }
 
         cameraEntity.setXRot(pitch);
@@ -73,7 +85,10 @@ public final class Freecam {
     }
 
     public static void toggleMomentumMode() {
-        momentumMode = !momentumMode;
+        OpticalConfig.FreecamConfig.FlightMode mode = OpticalConfig.FREECAM.getFlightMode();
+        OpticalConfig.FREECAM.setFlightMode(mode == OpticalConfig.FreecamConfig.FlightMode.DEFAULT
+                ? OpticalConfig.FreecamConfig.FlightMode.CREATIVE
+                : OpticalConfig.FreecamConfig.FlightMode.DEFAULT);
     }
 
     public static void onClientTick(Minecraft minecraft) {
@@ -82,9 +97,14 @@ public final class Freecam {
             return;
         }
 
+        ensureDetachedPlayerVisual(minecraft);
+        syncDetachedPlayerVisual(minecraft);
+
         if (!active || cameraEntity == null) {
             return;
         }
+
+        cameraEntity.setCollisionEnabled(OpticalConfig.FREECAM.isCollisionEnabled());
 
         minecraft.options.keyAttack.setDown(false);
         minecraft.options.keyUse.setDown(false);
@@ -109,23 +129,26 @@ public final class Freecam {
                 .add(rightVec.scale(inputDirection.x * horizontalSpeed))
                 .add(0.0, vertical * verticalSpeed, 0.0);
 
-        if (momentumMode) {
-            double smoothing = OpticalConfig.FREECAM.getMomentumSmoothing();
+        if (OpticalConfig.FREECAM.getFlightMode() == OpticalConfig.FreecamConfig.FlightMode.CREATIVE) {
             velocity = new Vec3(
-                    Mth.lerp(smoothing, velocity.x, targetVelocity.x),
-                    Mth.lerp(smoothing, velocity.y, targetVelocity.y),
-                    Mth.lerp(smoothing, velocity.z, targetVelocity.z)
+                    Mth.lerp(CREATIVE_MOMENTUM_SMOOTHING, velocity.x, targetVelocity.x),
+                    Mth.lerp(CREATIVE_MOMENTUM_SMOOTHING, velocity.y, targetVelocity.y),
+                    Mth.lerp(CREATIVE_MOMENTUM_SMOOTHING, velocity.z, targetVelocity.z)
             );
 
             if (targetVelocity.lengthSqr() < 1.0E-6) {
-                velocity = velocity.scale(OpticalConfig.FREECAM.getMomentumDamping());
+                velocity = velocity.scale(CREATIVE_MOMENTUM_DAMPING);
             }
         } else {
             velocity = targetVelocity;
         }
 
         cameraEntity.setDeltaMovement(velocity);
-        cameraEntity.setPos(cameraEntity.getX() + velocity.x, cameraEntity.getY() + velocity.y, cameraEntity.getZ() + velocity.z);
+        if (OpticalConfig.FREECAM.isCollisionEnabled()) {
+            cameraEntity.move(MoverType.SELF, velocity);
+        } else {
+            cameraEntity.setPos(cameraEntity.getX() + velocity.x, cameraEntity.getY() + velocity.y, cameraEntity.getZ() + velocity.z);
+        }
     }
 
     public static void handleTripod(int index) {
@@ -156,6 +179,7 @@ public final class Freecam {
             active = false;
             velocity = Vec3.ZERO;
             cameraEntity = null;
+            detachedPlayerVisual = null;
         }
     }
 
@@ -174,16 +198,20 @@ public final class Freecam {
 
         cameraEntity = new FreecamCameraEntity(level);
         cameraEntity.setId(-420);
-        cameraEntity.setPos(minecraft.player.getX(), minecraft.player.getY(), minecraft.player.getZ());
+        Vec3 detachPos = minecraft.gameRenderer.getMainCamera().position();
+        cameraEntity.setPos(detachPos.x, detachPos.y, detachPos.z);
         cameraEntity.setYRot(minecraft.player.getYRot());
         cameraEntity.setXRot(minecraft.player.getXRot());
         cameraEntity.yHeadRot = cameraEntity.getYRot();
         cameraEntity.yBodyRot = cameraEntity.getYRot();
+        cameraEntity.setCollisionEnabled(OpticalConfig.FREECAM.isCollisionEnabled());
         level.addEntity(cameraEntity);
+
+        ensureDetachedPlayerVisual(minecraft);
+        syncDetachedPlayerVisual(minecraft);
         minecraft.setCameraEntity(cameraEntity);
 
         velocity = Vec3.ZERO;
-        momentumMode = OpticalConfig.FREECAM.isMomentumByDefault();
     }
 
     private static void deactivate(Minecraft minecraft) {
@@ -207,4 +235,31 @@ public final class Freecam {
             minecraft.options.setCameraType(lastPerspective);
         }
     }
+
+    private static void syncDetachedPlayerVisual(Minecraft minecraft) {
+        if (minecraft.player == null || detachedPlayerVisual == null) {
+            return;
+        }
+
+        detachedPlayerVisual.setPos(minecraft.player.getX(), minecraft.player.getY(), minecraft.player.getZ());
+        detachedPlayerVisual.setYRot(minecraft.player.getYRot());
+        detachedPlayerVisual.setXRot(minecraft.player.getXRot());
+        detachedPlayerVisual.yHeadRot = minecraft.player.yHeadRot;
+        detachedPlayerVisual.yBodyRot = minecraft.player.yBodyRot;
+    }
+
+    private static void ensureDetachedPlayerVisual(Minecraft minecraft) {
+        if (minecraft.player == null || !(minecraft.level instanceof ClientLevel level)) {
+            return;
+        }
+
+        if (detachedPlayerVisual != null && detachedPlayerVisual.level() == level && !detachedPlayerVisual.isRemoved()) {
+            return;
+        }
+
+        detachedPlayerVisual = FreecamCameraEntity.detachedVisual(level, minecraft.player.getGameProfile());
+        detachedPlayerVisual.setId(DETACHED_PLAYER_VISUAL_ID);
+        level.addEntity(detachedPlayerVisual);
+    }
+
 }

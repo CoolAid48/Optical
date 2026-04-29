@@ -1,9 +1,10 @@
 package me.coolaid.optical.mixin;
 
-import me.coolaid.optical.util.CameraOverriddenEntity;
 import me.coolaid.optical.config.OpticalConfig;
 import me.coolaid.optical.logic.Freecam;
 import me.coolaid.optical.logic.Freelook;
+import me.coolaid.optical.util.CameraOverriddenEntity;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
@@ -27,42 +28,73 @@ public class EntityMixin implements CameraOverriddenEntity {
 
     @Inject(method = "turn", at = @At("HEAD"), cancellable = true)
     public void onTurn(double xDelta, double yDelta, CallbackInfo ci) {
-        if ((Object) this instanceof LocalPlayer) {
-            if (Freecam.isActive()) {
-                Freecam.addLookDelta(xDelta, yDelta);
-                ci.cancel();
-                return;
+        if (Freecam.isActive() && (Object) this == Minecraft.getInstance().player) {
+            Freecam.addLookDelta(xDelta, yDelta);
+            ci.cancel();
+            return;
+        }
+
+        if ((Object) this instanceof LocalPlayer && Freelook.isActive()) {
+            float sensitivity = (float) OpticalConfig.FREELOOK.getSensitivityMultiplier();
+            float pDelta = (float) (yDelta * 0.15F * sensitivity);
+            float yDelta_ = (float) (xDelta * 0.15F * sensitivity);
+
+            if (!optical$hasAnchor) {
+                optical$anchorYaw = this.optical$cameraYaw;
+                optical$hasAnchor = true;
             }
 
-            if (Freelook.isActive()) {
-                float sensitivity = (float) OpticalConfig.FREELOOK.getSensitivityMultiplier();
-                float pDelta = (float) (yDelta * 0.15F * sensitivity);
-                float yDelta_ = (float) (xDelta * 0.15F * sensitivity);
-
-                if (!optical$hasAnchor) {
-                    optical$anchorYaw = this.optical$cameraYaw;
-                    optical$hasAnchor = true;
-                }
-
-                if (OpticalConfig.FREELOOK.isInvertY()) {
-                    this.optical$cameraPitch = Mth.clamp(this.optical$cameraPitch + pDelta, -90.0f, 90.0f);
-                } else {
-                    this.optical$cameraPitch = Mth.clamp(this.optical$cameraPitch - pDelta, -90.0f, 90.0f);
-                }
-
-                float limit = (float) OpticalConfig.FREELOOK.getRotationLimit();
-
-                if (limit >= 360.0f) {
-                    this.optical$cameraYaw += yDelta_;
-                } else {
-                    this.optical$cameraYaw = Mth.clamp(this.optical$cameraYaw + yDelta_, optical$anchorYaw - limit, optical$anchorYaw + limit);
-                }
-                ci.cancel();
-                return;
+            if (OpticalConfig.FREELOOK.isInvertY()) {
+                this.optical$cameraPitch = Mth.clamp(this.optical$cameraPitch - pDelta, -90.0f, 90.0f);
+            } else {
+                this.optical$cameraPitch = Mth.clamp(this.optical$cameraPitch + pDelta, -90.0f, 90.0f);
             }
+
+            float limit = (float) OpticalConfig.FREELOOK.getRotationLimit();
+
+            if (limit >= 360.0f) {
+                this.optical$cameraYaw += yDelta_;
+            } else {
+                this.optical$cameraYaw = Mth.clamp(this.optical$cameraYaw + yDelta_, optical$anchorYaw - limit, optical$anchorYaw + limit);
+            }
+            ci.cancel();
+            return;
         }
 
         optical$hasAnchor = false;
+    }
+
+    @Inject(method = "setDeltaMovement(DDD)V", at = @At("HEAD"), cancellable = true)
+    private void optical$freezeDetachedPlayerVelocity(double x, double y, double z, CallbackInfo ci) {
+        if (optical$shouldFreezePlayer()) {
+            ci.cancel();
+        }
+    }
+
+    @Inject(method = "moveRelative", at = @At("HEAD"), cancellable = true)
+    private void optical$freezeDetachedPlayerInputMovement(float amount, net.minecraft.world.phys.Vec3 relative, CallbackInfo ci) {
+        if (optical$shouldFreezePlayer()) {
+            ci.cancel();
+        }
+    }
+
+    @Inject(method = "setPos(DDD)V", at = @At("HEAD"), cancellable = true)
+    private void optical$freezeDetachedPlayerPosition(double x, double y, double z, CallbackInfo ci) {
+        if (optical$shouldFreezePlayer()) {
+            ci.cancel();
+        }
+    }
+
+    @Inject(method = "setPosRaw", at = @At("HEAD"), cancellable = true)
+    private void optical$freezeDetachedPlayerRawPosition(double x, double y, double z, CallbackInfo ci) {
+        if (optical$shouldFreezePlayer()) {
+            ci.cancel();
+        }
+    }
+
+    @Unique
+    private boolean optical$shouldFreezePlayer() {
+        return Freecam.isActive() && (Object) this == Minecraft.getInstance().player;
     }
 
     @Override

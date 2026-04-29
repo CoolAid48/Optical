@@ -1,5 +1,6 @@
 package me.coolaid.optical.mixin;
 
+import me.coolaid.optical.logic.Freecam;
 import me.coolaid.optical.logic.Zoom;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.state.GameRenderState;
@@ -18,6 +19,13 @@ public class GameRendererMixin {
     private void optical$hideHudInAlternateZoom(CallbackInfo ci) {
         if (Zoom.shouldHideHud()) {
             this.gameRenderState.optionsRenderState.hideGui = true;
+        }
+    }
+
+    @Inject(method = "renderItemInHand", at = @At("HEAD"), cancellable = true)
+    private void optical$hideDetachedPlayerHand(CallbackInfo ci) {
+        if (Freecam.isActive() && !Freecam.shouldRenderPlayerHand()) {
+            ci.cancel();
         }
     }
 }
