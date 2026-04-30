@@ -15,7 +15,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public class AvatarRendererMixin {
     @Inject(method = "submitNameDisplay(Lnet/minecraft/client/renderer/entity/state/AvatarRenderState;Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/SubmitNodeCollector;Lnet/minecraft/client/renderer/state/level/CameraRenderState;)V", at = @At("HEAD"), cancellable = true)
     private void optical$toggleDetachedPlayerName(AvatarRenderState renderState, PoseStack poseStack, SubmitNodeCollector nodeCollector, CameraRenderState cameraRenderState, CallbackInfo ci) {
-        if (Freecam.isActive() && !Freecam.shouldRenderPlayerName()) {
+        if (Freecam.isActive() && (!Freecam.shouldRenderPlayerName() || renderState.shadowPieces.isEmpty())) {
             ci.cancel();
         }
     }

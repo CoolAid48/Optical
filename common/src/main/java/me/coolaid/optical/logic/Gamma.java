@@ -6,10 +6,10 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
 import net.minecraft.ChatFormatting;
 
-public final class Brightness {
+public final class Gamma {
     private static Integer currentGamma;
 
-    private Brightness() {
+    private Gamma() {
     }
 
     public static void onClientTick(Minecraft minecraft) {

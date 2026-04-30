@@ -1,6 +1,6 @@
 package me.coolaid.optical.mixin;
 
-import me.coolaid.optical.logic.Brightness;
+import me.coolaid.optical.logic.Gamma;
 import me.coolaid.optical.util.GammaOverrideState;
 import me.coolaid.optical.config.OpticalConfig;
 import net.minecraft.client.OptionInstance;
@@ -24,7 +24,7 @@ public class OptionInstanceMixin {
         if (!GammaOverrideState.suspendGammaOverride
                 && OpticalConfig.BRIGHTNESS.isEnabled()
                 && optical$isGammaOption()) {
-            cir.setReturnValue(Brightness.getCurrentGamma());
+            cir.setReturnValue(Gamma.getCurrentGamma());
         }
     }
 

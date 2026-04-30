@@ -3,7 +3,7 @@
   "id": "optical",
   "version": "${version}",
   "name": "Optical",
-  "description": "An assortment of utilities that gives you full control over your camera perspectives",
+  "description": "A collection of utilities that gives you full control over your camera perspectives",
   "authors": [
     "CoolAid48"
   ],

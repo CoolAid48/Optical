@@ -6,6 +6,7 @@
   "client": [
     "AvatarRendererMixin",
     "CameraMixin",
+    "ClientPacketListenerMixin",
     "EntityMixin",
     "EntityRenderDispatcherMixin",
     "GameRendererMixin",

@@ -2,7 +2,7 @@ package me.coolaid.optical.fabric.client;
 
 import me.coolaid.optical.OpticalBindings;
 import me.coolaid.optical.config.OpticalConfig;
-import me.coolaid.optical.logic.Brightness;
+import me.coolaid.optical.logic.Gamma;
 import me.coolaid.optical.logic.Freecam;
 import me.coolaid.optical.logic.Freelook;
 import me.coolaid.optical.logic.Zoom;
@@ -68,7 +68,7 @@ public final class OpticalFabricClient implements ClientModInitializer {
         }
 
         Freecam.onClientTick(minecraft);
-        Brightness.onClientTick(minecraft);
+        Gamma.onClientTick(minecraft);
         Zoom.onClientTick(minecraft);
     }
 }

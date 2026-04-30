@@ -11,15 +11,14 @@ import net.minecraft.world.phys.Vec3;
 
 public final class Freecam {
     public static final int DETACHED_PLAYER_VISUAL_ID = Integer.MAX_VALUE - 421;
-    private static final double CREATIVE_MOMENTUM_SMOOTHING = 0.10D;
-    private static final double CREATIVE_MOMENTUM_DAMPING = 0.94D;
+    private static final double CREATIVE_ACCELERATION = 0.35D;
+    private static final double CREATIVE_IDLE_DAMPING = 0.6D;
 
     private static boolean active = false;
 
     private static CameraType lastPerspective;
     private static Vec3 velocity = Vec3.ZERO;
     private static FreecamCameraEntity cameraEntity;
-    private static FreecamCameraEntity detachedPlayerVisual;
 
     private static final Vec3[] TRIPOD_POSITIONS = new Vec3[3];
     private static final float[] TRIPOD_YAWS = new float[3];
@@ -97,11 +96,12 @@ public final class Freecam {
             return;
         }
 
-        ensureDetachedPlayerVisual(minecraft);
-        syncDetachedPlayerVisual(minecraft);
-
         if (!active || cameraEntity == null) {
             return;
+        }
+
+        if (minecraft.options.getCameraType() != CameraType.FIRST_PERSON) {
+            minecraft.options.setCameraType(CameraType.FIRST_PERSON);
         }
 
         cameraEntity.setCollisionEnabled(OpticalConfig.FREECAM.isCollisionEnabled());
@@ -130,14 +130,18 @@ public final class Freecam {
                 .add(0.0, vertical * verticalSpeed, 0.0);
 
         if (OpticalConfig.FREECAM.getFlightMode() == OpticalConfig.FreecamConfig.FlightMode.CREATIVE) {
-            velocity = new Vec3(
-                    Mth.lerp(CREATIVE_MOMENTUM_SMOOTHING, velocity.x, targetVelocity.x),
-                    Mth.lerp(CREATIVE_MOMENTUM_SMOOTHING, velocity.y, targetVelocity.y),
-                    Mth.lerp(CREATIVE_MOMENTUM_SMOOTHING, velocity.z, targetVelocity.z)
-            );
+            velocity = velocity.scale(0.91D);
 
-            if (targetVelocity.lengthSqr() < 1.0E-6) {
-                velocity = velocity.scale(CREATIVE_MOMENTUM_DAMPING);
+            Vec3 horizontalTarget = new Vec3(targetVelocity.x, 0.0D, targetVelocity.z);
+            Vec3 horizontalVelocity = new Vec3(velocity.x, 0.0D, velocity.z);
+            Vec3 horizontalDelta = horizontalTarget.subtract(horizontalVelocity).scale(CREATIVE_ACCELERATION);
+
+            velocity = new Vec3(velocity.x + horizontalDelta.x, velocity.y, velocity.z + horizontalDelta.z);
+
+            if (Math.abs(vertical) > 1.0E-6) {
+                velocity = velocity.add(0.0D, vertical * (verticalSpeed * 0.3D), 0.0D);
+            } else {
+                velocity = new Vec3(velocity.x, velocity.y * CREATIVE_IDLE_DAMPING, velocity.z);
             }
         } else {
             velocity = targetVelocity;
@@ -179,7 +183,6 @@ public final class Freecam {
             active = false;
             velocity = Vec3.ZERO;
             cameraEntity = null;
-            detachedPlayerVisual = null;
         }
     }
 
@@ -207,8 +210,6 @@ public final class Freecam {
         cameraEntity.setCollisionEnabled(OpticalConfig.FREECAM.isCollisionEnabled());
         level.addEntity(cameraEntity);
 
-        ensureDetachedPlayerVisual(minecraft);
-        syncDetachedPlayerVisual(minecraft);
         minecraft.setCameraEntity(cameraEntity);
 
         velocity = Vec3.ZERO;
@@ -235,31 +236,4 @@ public final class Freecam {
             minecraft.options.setCameraType(lastPerspective);
         }
     }
-
-    private static void syncDetachedPlayerVisual(Minecraft minecraft) {
-        if (minecraft.player == null || detachedPlayerVisual == null) {
-            return;
-        }
-
-        detachedPlayerVisual.setPos(minecraft.player.getX(), minecraft.player.getY(), minecraft.player.getZ());
-        detachedPlayerVisual.setYRot(minecraft.player.getYRot());
-        detachedPlayerVisual.setXRot(minecraft.player.getXRot());
-        detachedPlayerVisual.yHeadRot = minecraft.player.yHeadRot;
-        detachedPlayerVisual.yBodyRot = minecraft.player.yBodyRot;
-    }
-
-    private static void ensureDetachedPlayerVisual(Minecraft minecraft) {
-        if (minecraft.player == null || !(minecraft.level instanceof ClientLevel level)) {
-            return;
-        }
-
-        if (detachedPlayerVisual != null && detachedPlayerVisual.level() == level && !detachedPlayerVisual.isRemoved()) {
-            return;
-        }
-
-        detachedPlayerVisual = FreecamCameraEntity.detachedVisual(level, minecraft.player.getGameProfile());
-        detachedPlayerVisual.setId(DETACHED_PLAYER_VISUAL_ID);
-        level.addEntity(detachedPlayerVisual);
-    }
-
 }

@@ -1,7 +1,7 @@
 package me.coolaid.optical.mixin;
 
 import me.coolaid.optical.config.OpticalConfig;
-import me.coolaid.optical.logic.Brightness;
+import me.coolaid.optical.logic.Gamma;
 import net.minecraft.client.renderer.LightmapRenderStateExtractor;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -18,7 +18,7 @@ public class LightmapRenderStateExtractorMixin {
             return Math.max(first, second);
         }
 
-        if (Brightness.getCurrentGamma() < 0.0D) {
+        if (Gamma.getCurrentGamma() < 0.0D) {
             if (first == 0.0F) {
                 return second;
             }
