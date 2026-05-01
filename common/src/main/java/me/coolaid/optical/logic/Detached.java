@@ -1,6 +1,7 @@
 package me.coolaid.optical.logic;
 
 import me.coolaid.optical.config.OpticalConfig;
+import me.coolaid.optical.util.ActionBarMessages;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.phys.Vec3;
@@ -51,6 +52,9 @@ public final class Detached {
     }
 
     public static void deactivate() {
+        if (active) {
+            ActionBarMessages.showDetachedCamera(false);
+        }
         active = false;
     }
 
@@ -61,5 +65,6 @@ public final class Detached {
         yaw = camera.yRot();
         pitch = camera.xRot();
         active = true;
+        ActionBarMessages.showDetachedCamera(true);
     }
 }

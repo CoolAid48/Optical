@@ -27,10 +27,6 @@ public final class OpticalNeoForgeClient {
         event.registerCategory(Keybindings.category());
         event.register(Keybindings.FREELOOK);
         event.register(Keybindings.FREECAM_TOGGLE);
-        event.register(Keybindings.FREECAM_MOMENTUM);
-        event.register(Keybindings.FREECAM_TRIPOD_1);
-        event.register(Keybindings.FREECAM_TRIPOD_2);
-        event.register(Keybindings.FREECAM_TRIPOD_3);
         event.register(Keybindings.DETACH_CAMERA);
         event.register(Keybindings.TOGGLE_BRIGHTNESS);
         event.register(Keybindings.INCREASE_BRIGHTNESS);
@@ -55,20 +51,6 @@ public final class OpticalNeoForgeClient {
 
         while (Keybindings.FREECAM_TOGGLE.consumeClick()) {
             Freecam.toggle(minecraft);
-        }
-
-        while (Keybindings.FREECAM_MOMENTUM.consumeClick()) {
-            Freecam.toggleMomentumMode();
-        }
-
-        while (Keybindings.FREECAM_TRIPOD_1.consumeClick()) {
-            Freecam.handleTripod(0);
-        }
-        while (Keybindings.FREECAM_TRIPOD_2.consumeClick()) {
-            Freecam.handleTripod(1);
-        }
-        while (Keybindings.FREECAM_TRIPOD_3.consumeClick()) {
-            Freecam.handleTripod(2);
         }
 
         while (Keybindings.DETACH_CAMERA.consumeClick()) {

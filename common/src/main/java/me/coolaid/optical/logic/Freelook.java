@@ -1,5 +1,6 @@
 package me.coolaid.optical.logic;
 
+import me.coolaid.optical.util.ActionBarMessages;
 import me.coolaid.optical.util.CameraOverriddenEntity;
 import me.coolaid.optical.config.OpticalConfig;
 import net.minecraft.client.CameraType;
@@ -64,6 +65,7 @@ public final class Freelook {
         if (lastPerspective == CameraType.FIRST_PERSON) {
             minecraft.options.setCameraType(requestedPerspective);
         }
+        ActionBarMessages.showFreelook(true);
     }
 
     public static void forceDeactivate(Minecraft minecraft) {
@@ -79,6 +81,7 @@ public final class Freelook {
         if (minecraft.options.getCameraType() != lastPerspective) {
             minecraft.options.setCameraType(lastPerspective);
         }
+        ActionBarMessages.showFreelook(false);
     }
 
     public static CameraType getFreeLookPerspective() {

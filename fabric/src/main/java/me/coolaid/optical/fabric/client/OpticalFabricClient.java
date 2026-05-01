@@ -19,10 +19,6 @@ public final class OpticalFabricClient implements ClientModInitializer {
     public void onInitializeClient() {
         KeyMappingHelper.registerKeyMapping(Keybindings.FREELOOK);
         KeyMappingHelper.registerKeyMapping(Keybindings.FREECAM_TOGGLE);
-        KeyMappingHelper.registerKeyMapping(Keybindings.FREECAM_MOMENTUM);
-        KeyMappingHelper.registerKeyMapping(Keybindings.FREECAM_TRIPOD_1);
-        KeyMappingHelper.registerKeyMapping(Keybindings.FREECAM_TRIPOD_2);
-        KeyMappingHelper.registerKeyMapping(Keybindings.FREECAM_TRIPOD_3);
         KeyMappingHelper.registerKeyMapping(Keybindings.DETACH_CAMERA);
         KeyMappingHelper.registerKeyMapping(Keybindings.TOGGLE_BRIGHTNESS);
         KeyMappingHelper.registerKeyMapping(Keybindings.INCREASE_BRIGHTNESS);
@@ -40,20 +36,6 @@ public final class OpticalFabricClient implements ClientModInitializer {
 
         while (Keybindings.FREECAM_TOGGLE.consumeClick()) {
             Freecam.toggle(minecraft);
-        }
-
-        while (Keybindings.FREECAM_MOMENTUM.consumeClick()) {
-            Freecam.toggleMomentumMode();
-        }
-
-        while (Keybindings.FREECAM_TRIPOD_1.consumeClick()) {
-            Freecam.handleTripod(0);
-        }
-        while (Keybindings.FREECAM_TRIPOD_2.consumeClick()) {
-            Freecam.handleTripod(1);
-        }
-        while (Keybindings.FREECAM_TRIPOD_3.consumeClick()) {
-            Freecam.handleTripod(2);
         }
 
         while (Keybindings.DETACH_CAMERA.consumeClick()) {

@@ -19,6 +19,7 @@ public final class OpticalConfig {
     public static final BrightnessConfig BRIGHTNESS = new BrightnessConfig();
     public static final FreecamConfig FREECAM = new FreecamConfig();
     public static final ZoomConfig ZOOM = new ZoomConfig();
+    public static final ActionBarMessagesConfig ACTION_BAR_MESSAGES = new ActionBarMessagesConfig();
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
     private static boolean brightnessLoaded;
     private static boolean suppressBrightnessSave;
@@ -50,7 +51,14 @@ public final class OpticalConfig {
             if (persisted.toggledLevel != null) BRIGHTNESS.toggledLevel = BRIGHTNESS.clampToRange(persisted.toggledLevel);
             if (persisted.updateToggleValue != null) BRIGHTNESS.updateToggleValue = persisted.updateToggleValue;
             if (persisted.gammaStep != null) BRIGHTNESS.gammaStep = Mth.clamp(persisted.gammaStep, 1, 1000);
-            if (persisted.showGammaMessage != null) BRIGHTNESS.showGammaMessage = persisted.showGammaMessage;
+            if (persisted.showGammaMessage != null) ACTION_BAR_MESSAGES.showGammaMessage = persisted.showGammaMessage;
+            if (persisted.actionBarMessages != null) {
+                ActionBarMessagesPersisted messages = persisted.actionBarMessages;
+                if (messages.showGammaMessage != null) ACTION_BAR_MESSAGES.showGammaMessage = messages.showGammaMessage;
+                if (messages.showFreecamMessage != null) ACTION_BAR_MESSAGES.showFreecamMessage = messages.showFreecamMessage;
+                if (messages.showFreelookMessage != null) ACTION_BAR_MESSAGES.showFreelookMessage = messages.showFreelookMessage;
+                if (messages.showDetachedCameraMessage != null) ACTION_BAR_MESSAGES.showDetachedCameraMessage = messages.showDetachedCameraMessage;
+            }
         } catch (IOException | JsonSyntaxException e) {
             Optical.LOGGER.warn("Failed to load brightness config from {}", path, e);
         } finally {
@@ -74,7 +82,12 @@ public final class OpticalConfig {
                 persisted.toggledLevel = BRIGHTNESS.toggledLevel;
                 persisted.updateToggleValue = BRIGHTNESS.updateToggleValue;
                 persisted.gammaStep = BRIGHTNESS.gammaStep;
-                persisted.showGammaMessage = BRIGHTNESS.showGammaMessage;
+                persisted.showGammaMessage = ACTION_BAR_MESSAGES.showGammaMessage;
+                persisted.actionBarMessages = new ActionBarMessagesPersisted();
+                persisted.actionBarMessages.showGammaMessage = ACTION_BAR_MESSAGES.showGammaMessage;
+                persisted.actionBarMessages.showFreecamMessage = ACTION_BAR_MESSAGES.showFreecamMessage;
+                persisted.actionBarMessages.showFreelookMessage = ACTION_BAR_MESSAGES.showFreelookMessage;
+                persisted.actionBarMessages.showDetachedCameraMessage = ACTION_BAR_MESSAGES.showDetachedCameraMessage;
                 GSON.toJson(persisted, writer);
             }
         } catch (IOException e) {
@@ -96,6 +109,14 @@ public final class OpticalConfig {
         private Boolean updateToggleValue;
         private Integer gammaStep;
         private Boolean showGammaMessage;
+        private ActionBarMessagesPersisted actionBarMessages;
+    }
+
+    private static final class ActionBarMessagesPersisted {
+        private Boolean showGammaMessage;
+        private Boolean showFreecamMessage;
+        private Boolean showFreelookMessage;
+        private Boolean showDetachedCameraMessage;
     }
 
     public static final class FreelookConfig {
@@ -164,7 +185,6 @@ public final class OpticalConfig {
         private int toggledLevel = 1500;
         private boolean updateToggleValue = true;
         private int gammaStep = 10;
-        private boolean showGammaMessage = true;
 
         public boolean isEnabled() { return this.enabled; }
         public void setEnabled(boolean enabled) { this.enabled = enabled; OpticalConfig.saveBrightness(); }
@@ -178,11 +198,25 @@ public final class OpticalConfig {
         public void setUpdateToggleValue(boolean updateToggleValue) { this.updateToggleValue = updateToggleValue; OpticalConfig.saveBrightness(); }
         public int getGammaStep() { return this.gammaStep; }
         public void setGammaStep(int gammaStep) { this.gammaStep = Mth.clamp(gammaStep, 1, 1000); OpticalConfig.saveBrightness(); }
-        public boolean isShowGammaMessage() { return this.showGammaMessage; }
-        public void setShowGammaMessage(boolean showGammaMessage) { this.showGammaMessage = showGammaMessage; OpticalConfig.saveBrightness(); }
         public int clampToRange(int value) {
             return Mth.clamp(value, -750, 1500);
         }
+    }
+
+    public static final class ActionBarMessagesConfig {
+        private boolean showGammaMessage = true;
+        private boolean showFreecamMessage = true;
+        private boolean showFreelookMessage = false;
+        private boolean showDetachedCameraMessage = false;
+
+        public boolean isShowGammaMessage() { return this.showGammaMessage; }
+        public void setShowGammaMessage(boolean showGammaMessage) { this.showGammaMessage = showGammaMessage; OpticalConfig.saveBrightness(); }
+        public boolean isShowFreecamMessage() { return this.showFreecamMessage; }
+        public void setShowFreecamMessage(boolean showFreecamMessage) { this.showFreecamMessage = showFreecamMessage; OpticalConfig.saveBrightness(); }
+        public boolean isShowFreelookMessage() { return this.showFreelookMessage; }
+        public void setShowFreelookMessage(boolean showFreelookMessage) { this.showFreelookMessage = showFreelookMessage; OpticalConfig.saveBrightness(); }
+        public boolean isShowDetachedCameraMessage() { return this.showDetachedCameraMessage; }
+        public void setShowDetachedCameraMessage(boolean showDetachedCameraMessage) { this.showDetachedCameraMessage = showDetachedCameraMessage; OpticalConfig.saveBrightness(); }
     }
 
     public static final class ZoomConfig {

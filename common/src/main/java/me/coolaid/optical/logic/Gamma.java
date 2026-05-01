@@ -85,7 +85,7 @@ public final class Gamma {
     }
 
     private static void showGammaMessage(Minecraft minecraft) {
-        if (!OpticalConfig.BRIGHTNESS.isShowGammaMessage() || minecraft.player == null) {
+        if (!OpticalConfig.ACTION_BAR_MESSAGES.isShowGammaMessage() || minecraft.player == null) {
             return;
         }
         int level;

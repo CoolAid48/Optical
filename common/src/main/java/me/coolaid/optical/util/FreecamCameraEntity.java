@@ -8,6 +8,7 @@ import net.minecraft.client.player.AbstractClientPlayer;
 
 import net.minecraft.client.player.ClientInput;
 import net.minecraft.client.player.KeyboardInput;
+import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.tags.FluidTags;
@@ -64,15 +65,17 @@ public final class FreecamCameraEntity extends AbstractClientPlayer {
 
     @Override
     public int getUseItemRemainingTicks() {
-        if (Minecraft.getInstance().player == null) {
+        LocalPlayer player = Minecraft.getInstance().player;
+        if (player == null) {
             return super.getUseItemRemainingTicks();
         }
-        return Minecraft.getInstance().player.getUseItemRemainingTicks();
+        return player.getUseItemRemainingTicks();
     }
 
     @Override
     public boolean isUsingItem() {
-        return Minecraft.getInstance().player != null && Minecraft.getInstance().player.isUsingItem();
+        LocalPlayer player = Minecraft.getInstance().player;
+        return player != null && player.isUsingItem();
     }
 
     @Override
@@ -87,10 +90,11 @@ public final class FreecamCameraEntity extends AbstractClientPlayer {
 
     @Override
     public MobEffectInstance getEffect(Holder<MobEffect> effect) {
-        if (Minecraft.getInstance().player == null) {
+        LocalPlayer player = Minecraft.getInstance().player;
+        if (player == null) {
             return super.getEffect(effect);
         }
-        return Minecraft.getInstance().player.getEffect(effect);
+        return player.getEffect(effect);
     }
 
     @Override
@@ -124,10 +128,11 @@ public final class FreecamCameraEntity extends AbstractClientPlayer {
 
     @Override
     public float getAttackAnim(float partialTicks) {
-        if (Minecraft.getInstance().player == null) {
+        LocalPlayer player = Minecraft.getInstance().player;
+        if (player == null) {
             return super.getAttackAnim(partialTicks);
         }
-        return Minecraft.getInstance().player.getAttackAnim(partialTicks);
+        return player.getAttackAnim(partialTicks);
     }
 
     @Override

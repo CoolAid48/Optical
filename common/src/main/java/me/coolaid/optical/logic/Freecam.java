@@ -1,6 +1,7 @@
 package me.coolaid.optical.logic;
 
 import me.coolaid.optical.config.OpticalConfig;
+import me.coolaid.optical.util.ActionBarMessages;
 import me.coolaid.optical.util.FreecamCameraEntity;
 import net.minecraft.client.CameraType;
 import net.minecraft.client.Minecraft;
@@ -20,18 +21,12 @@ public final class Freecam {
     private static boolean lastSmartCull = true;
     private static FreecamCameraEntity cameraEntity;
 
-    private static final Vec3[] TRIPOD_POSITIONS = new Vec3[3];
-    private static final float[] TRIPOD_YAWS = new float[3];
-    private static final float[] TRIPOD_PITCHES = new float[3];
-
     private Freecam() {
     }
 
     public static boolean isActive() { return active; }
     public static boolean shouldRenderPlayerName() { return OpticalConfig.FREECAM.isShowDetachedPlayerName(); }
     public static boolean shouldRenderPlayerHand() { return OpticalConfig.FREECAM.isShowDetachedPlayerHand(); }
-    public static boolean shouldPreventInteractions() { return false; }
-    public static Vec3 getPosition() { return cameraEntity != null ? cameraEntity.position() : Vec3.ZERO; }
     public static Vec3 getPosition(float partialTick) {
         if (cameraEntity == null) return Vec3.ZERO;
         return new Vec3(
@@ -40,12 +35,10 @@ public final class Freecam {
                 Mth.lerp(partialTick, cameraEntity.zo, cameraEntity.getZ())
         );
     }
-    public static float getYaw() { return cameraEntity != null ? cameraEntity.getYRot() : 0.0F; }
     public static float getYaw(float partialTick) {
         if (cameraEntity == null) return 0.0F;
         return cameraEntity.yRotO + partialTick * Mth.wrapDegrees(cameraEntity.getYRot() - cameraEntity.yRotO);
     }
-    public static float getPitch() { return cameraEntity != null ? cameraEntity.getXRot() : 0.0F; }
     public static float getPitch(float partialTick) {
         return cameraEntity != null ? Mth.lerp(partialTick, cameraEntity.xRotO, cameraEntity.getXRot()) : 0.0F;
     }
@@ -79,13 +72,6 @@ public final class Freecam {
         if (active) deactivate(minecraft); else activate(minecraft);
     }
 
-    public static void toggleMomentumMode() {
-        OpticalConfig.FreecamConfig.FlightMode mode = OpticalConfig.FREECAM.getFlightMode();
-        OpticalConfig.FREECAM.setFlightMode(mode == OpticalConfig.FreecamConfig.FlightMode.DEFAULT
-                ? OpticalConfig.FreecamConfig.FlightMode.CREATIVE
-                : OpticalConfig.FreecamConfig.FlightMode.DEFAULT);
-    }
-
     public static void onClientTick(Minecraft minecraft) {
         if (!OpticalConfig.FREECAM.isEnabled() || minecraft.player == null || minecraft.level == null) {
             deactivate(minecraft);
@@ -106,26 +92,6 @@ public final class Freecam {
         Input keyPresses = minecraft.player.input.keyPresses;
         input.keyPresses = new Input(false, false, false, false, false, keyPresses.shift(), false);
         minecraft.player.input = input;
-    }
-
-    public static void handleTripod(int index) {
-        if (!active || cameraEntity == null || index < 0 || index >= TRIPOD_POSITIONS.length) return;
-        if (Minecraft.getInstance().options.keyShift.isDown()) {
-
-            TRIPOD_POSITIONS[index] = cameraEntity.position();
-            TRIPOD_YAWS[index] = cameraEntity.getYRot();
-            TRIPOD_PITCHES[index] = cameraEntity.getXRot();
-            return;
-        }
-
-        Vec3 tripodPos = TRIPOD_POSITIONS[index];
-        if (tripodPos != null) {
-            cameraEntity.setPos(tripodPos.x, tripodPos.y, tripodPos.z);
-            cameraEntity.setYRot(TRIPOD_YAWS[index]);
-            cameraEntity.setXRot(TRIPOD_PITCHES[index]);
-            snapCameraHistory(cameraEntity);
-            cameraEntity.setDeltaMovement(Vec3.ZERO);
-        }
     }
 
     public static void onClientCleanup(Minecraft minecraft) {
@@ -162,6 +128,7 @@ public final class Freecam {
 
         level.addEntity(cameraEntity);
         setMinecraftCameraEntity(minecraft, cameraEntity);
+        ActionBarMessages.showFreecam(true);
     }
 
     private static void deactivate(Minecraft minecraft) {
@@ -172,6 +139,7 @@ public final class Freecam {
         if (cameraEntity != null) { cameraEntity.remove(Entity.RemovalReason.DISCARDED); cameraEntity = null; }
         if (minecraft.player != null) minecraft.player.input = new KeyboardInput(minecraft.options);
         if (lastPerspective != null && minecraft.options.getCameraType() != lastPerspective) minecraft.options.setCameraType(lastPerspective);
+        ActionBarMessages.showFreecam(false);
     }
 
     private static void setMinecraftCameraEntity(Minecraft minecraft, Entity entity) {
