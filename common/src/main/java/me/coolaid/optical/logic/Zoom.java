@@ -1,6 +1,6 @@
 package me.coolaid.optical.logic;
 
-import me.coolaid.optical.OpticalBindings;
+import me.coolaid.optical.Keybindings;
 import me.coolaid.optical.config.OpticalConfig;
 import net.minecraft.client.Minecraft;
 
@@ -33,7 +33,7 @@ public final class Zoom {
             return;
         }
 
-        while (OpticalBindings.SECONDARY_ZOOM.consumeClick()) {
+        while (Keybindings.SECONDARY_ZOOM.consumeClick()) {
             secondaryZoomActive = !secondaryZoomActive;
             if (secondaryZoomActive) {
                 secondaryActivatedAtNanos = System.nanoTime();
@@ -81,7 +81,7 @@ public final class Zoom {
     }
 
     private static boolean isPrimaryZoomActive() {
-        return OpticalBindings.ZOOM.isDown();
+        return Keybindings.ZOOM.isDown();
     }
 
     private static boolean isSecondaryZoomActive() {

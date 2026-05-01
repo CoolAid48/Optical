@@ -64,37 +64,13 @@ public class EntityMixin implements CameraOverriddenEntity {
         optical$hasAnchor = false;
     }
 
-    @Inject(method = "setDeltaMovement(DDD)V", at = @At("HEAD"), cancellable = true)
-    private void optical$freezeDetachedPlayerVelocity(double x, double y, double z, CallbackInfo ci) {
-        if (optical$shouldFreezePlayer()) {
+    @Inject(method = "push(Lnet/minecraft/world/entity/Entity;)V", at = @At("HEAD"), cancellable = true)
+    private void optical$preventFreecamEntityPush(Entity entity, CallbackInfo ci) {
+        if (Freecam.isActive()
+                && Freecam.getCameraEntity() != null
+                && ((Object) this == Freecam.getCameraEntity() || entity == Freecam.getCameraEntity())) {
             ci.cancel();
         }
-    }
-
-    @Inject(method = "moveRelative", at = @At("HEAD"), cancellable = true)
-    private void optical$freezeDetachedPlayerInputMovement(float amount, net.minecraft.world.phys.Vec3 relative, CallbackInfo ci) {
-        if (optical$shouldFreezePlayer()) {
-            ci.cancel();
-        }
-    }
-
-    @Inject(method = "setPos(DDD)V", at = @At("HEAD"), cancellable = true)
-    private void optical$freezeDetachedPlayerPosition(double x, double y, double z, CallbackInfo ci) {
-        if (optical$shouldFreezePlayer()) {
-            ci.cancel();
-        }
-    }
-
-    @Inject(method = "setPosRaw", at = @At("HEAD"), cancellable = true)
-    private void optical$freezeDetachedPlayerRawPosition(double x, double y, double z, CallbackInfo ci) {
-        if (optical$shouldFreezePlayer()) {
-            ci.cancel();
-        }
-    }
-
-    @Unique
-    private boolean optical$shouldFreezePlayer() {
-        return Freecam.isActive() && (Object) this == Minecraft.getInstance().player;
     }
 
     @Override

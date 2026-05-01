@@ -1,6 +1,6 @@
 package me.coolaid.optical.logic;
 
-import me.coolaid.optical.OpticalBindings;
+import me.coolaid.optical.Keybindings;
 import me.coolaid.optical.config.OpticalConfig;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
@@ -25,7 +25,7 @@ public final class Gamma {
             return;
         }
 
-        while (OpticalBindings.TOGGLE_BRIGHTNESS.consumeClick()) {
+        while (Keybindings.TOGGLE_BRIGHTNESS.consumeClick()) {
             OpticalConfig.BRIGHTNESS.setToggled(!OpticalConfig.BRIGHTNESS.isToggled());
             currentGamma = OpticalConfig.BRIGHTNESS.isToggled()
                     ? OpticalConfig.BRIGHTNESS.getToggledLevel()
@@ -33,12 +33,12 @@ public final class Gamma {
             showGammaMessage(minecraft);
         }
 
-        while (OpticalBindings.INCREASE_BRIGHTNESS.consumeClick()) {
+        while (Keybindings.INCREASE_BRIGHTNESS.consumeClick()) {
             adjustGamma(OpticalConfig.BRIGHTNESS.getGammaStep());
             showGammaMessage(minecraft);
         }
 
-        while (OpticalBindings.DECREASE_BRIGHTNESS.consumeClick()) {
+        while (Keybindings.DECREASE_BRIGHTNESS.consumeClick()) {
             adjustGamma(-OpticalConfig.BRIGHTNESS.getGammaStep());
             showGammaMessage(minecraft);
         }

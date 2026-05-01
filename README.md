@@ -3,7 +3,7 @@
 ![](https://img.shields.io/badge/Versions-26.1.x-darkslateblue?style=for-the-badge)
 ![](https://img.shields.io/badge/Environments-Client-darkslateblue?style=for-the-badge)
 
-### A collection of utilities that gives you full control over your camera  perspectives of utilities that gives you full control over your camera perspectives!
+### A collection of utilities that gives you full control over your camera perspectives!
 
 ## More Details Below:
 - **Freelook allows you to rotate your camera around the player while moving**

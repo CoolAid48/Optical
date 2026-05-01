@@ -15,6 +15,7 @@ import java.nio.file.Path;
 
 public final class OpticalConfig {
     public static final FreelookConfig FREELOOK = new FreelookConfig();
+    public static final DetachedCameraConfig DETACHED_CAMERA = new DetachedCameraConfig();
     public static final BrightnessConfig BRIGHTNESS = new BrightnessConfig();
     public static final FreecamConfig FREECAM = new FreecamConfig();
     public static final ZoomConfig ZOOM = new ZoomConfig();
@@ -116,6 +117,13 @@ public final class OpticalConfig {
         public void setRotationLimit(int rotationLimit) { this.rotationLimit = rotationLimit; }
     }
 
+    public static final class DetachedCameraConfig {
+        private boolean enabled = true;
+
+        public boolean isEnabled() { return this.enabled; }
+        public void setEnabled(boolean enabled) { this.enabled = enabled; }
+    }
+
     public static final class FreecamConfig {
         public enum FlightMode {
             DEFAULT,
@@ -126,7 +134,7 @@ public final class OpticalConfig {
         private boolean invertY = false;
         private FlightMode flightMode = FlightMode.DEFAULT;
         private boolean showDetachedPlayerName = true;
-        private boolean showDetachedPlayerHand = true;
+        private boolean showDetachedPlayerHand = false;
         private boolean collisionEnabled = false;
         private double horizontalSpeed = 1.0D;
         private double verticalSpeed = 1.0D;
