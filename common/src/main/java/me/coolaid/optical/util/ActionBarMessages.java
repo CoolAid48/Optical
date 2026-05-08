@@ -10,21 +10,21 @@ public final class ActionBarMessages {
     }
 
     public static void showFreecam(boolean enabled) {
-        OpticalConfig.ensureBrightnessLoaded();
+        OpticalConfig.ensureLoaded();
         if (OpticalConfig.ACTION_BAR_MESSAGES.isShowFreecamMessage()) {
             showStateMessage("optical.actionbar.feature.freecam", enabled);
         }
     }
 
     public static void showFreelook(boolean enabled) {
-        OpticalConfig.ensureBrightnessLoaded();
+        OpticalConfig.ensureLoaded();
         if (OpticalConfig.ACTION_BAR_MESSAGES.isShowFreelookMessage()) {
             showStateMessage("optical.actionbar.feature.freelook", enabled);
         }
     }
 
     public static void showDetachedCamera(boolean enabled) {
-        OpticalConfig.ensureBrightnessLoaded();
+        OpticalConfig.ensureLoaded();
         if (OpticalConfig.ACTION_BAR_MESSAGES.isShowDetachedCameraMessage()) {
             showStateMessage("optical.actionbar.feature.detached_camera", enabled);
         }

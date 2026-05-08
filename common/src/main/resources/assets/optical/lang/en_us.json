@@ -99,7 +99,7 @@
   "optical.zoom.option.zoom_in_transition.desc": "Choose how zoom-in transitions are applied",
   "optical.zoom.option.zoom_out_transition": "Zoom Out Transition",
   "optical.zoom.option.zoom_out_transition.desc": "Choose how zoom-out transitions are applied",
-  "optical.zoom.value.exponential": "Exponential",
+  "optical.zoom.value.smooth": "Smooth",
   "optical.zoom.value.instant": "Instant",
 
   "optical.gamma.option.enabled": "Enable Gamma Tweaks",

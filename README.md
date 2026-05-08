@@ -6,12 +6,36 @@
 ### A collection of utilities that gives you full control over your camera perspectives!
 
 ## More Details Below:
-- **Freelook allows you to rotate your camera around the player while moving**
-- **Freecam gives you full control over your camera completely detached from the player**
-- **Zoom functionality allowing you to simply zoom in, and adjust the zoom with your scroll wheel**
-- **Gamma tweaks that allow you to dynamically change your in-game brightness (Fullbright)**
-- **Highly customizable config to toggle each feature, and includes configurable settings for everything**
-- **Works fully client-side, please be aware of some conflicts with rules on multiplayer servers!**
+<details>
+  <summary><b>Freelook allows you to rotate your camera around the player while moving</b></summary>
+  <img src="https://cdn.modrinth.com/data/cached_images/7ebbc8f4b746dc358e819d8f5778a92a40cc4d17.gif" alt="optical_freelook">
+</details>
+
+<details>
+  <summary><b>Freecam gives you full control over your camera completely detached from the player</b></summary>
+  <img src="https://cdn.modrinth.com/data/cached_images/172207cc01f1ca89d6bdb1c7eb6ac2c740c4bfa8.gif" alt="optical_freecam">
+</details>
+
+<details>
+  <summary><b>Zoom functionality allowing you to simply zoom in, and adjust the zoom with your scroll wheel</b></summary>
+  <img src="https://cdn.modrinth.com/data/cached_images/54131c6a6a8f350c3ddfeab0dddf4939cf4c059f.gif" alt="optical_zoom">
+</details>
+
+<details>
+  <summary><b>Gamma tweaks that allow you to dynamically change your in-game brightness (Fullbright)</b></summary>
+  <img src="https://cdn.modrinth.com/data/cached_images/08456ad5a43f59db49befac1ab31292bdc57a294.gif" alt="optical_gamma">
+</details>
+
+<details>
+  <summary><b>Highly customizable config to toggle each feature, and configurable settings for everything</b></summary>
+  <img src="https://cdn.modrinth.com/data/cached_images/618e6a6abc4a6fe69c68e15464f9d798ce639d8e.gif" alt="optical_config">
+</details>
+
+<details>
+  <summary><b>Works fully client-side, please be aware of some conflicts with rules on multiplayer servers!</b></summary>
+  <img src="https://cdn.modrinth.com/data/cached_images/36bc75bce451f937667baba48b2e29814b645255.gif" alt="optical_detached">
+</details>
+
 
 #### Any bugs or issues, please make a report on [GitHub](https://github.com/CoolAid48/Optical/issues)
 

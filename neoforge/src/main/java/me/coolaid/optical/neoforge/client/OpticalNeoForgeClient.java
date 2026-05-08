@@ -46,6 +46,8 @@ public final class OpticalNeoForgeClient {
     }
 
     private static void onClientTick(Minecraft minecraft) {
+        OpticalConfig.ensureLoaded();
+
         Freelook.onClientCleanup(minecraft);
         Freecam.onClientCleanup(minecraft);
 

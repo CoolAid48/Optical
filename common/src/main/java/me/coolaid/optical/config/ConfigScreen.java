@@ -15,7 +15,7 @@ public class ConfigScreen {
     private static final List<Integer> LIMITS = List.of(30, 60, 90, 360);
 
     public static Screen create(Screen parent) {
-        OpticalConfig.ensureBrightnessLoaded();
+        OpticalConfig.ensureLoaded();
         return YetAnotherConfigLib.createBuilder()
                 .title(Component.translatable("optical.config.title"))
 
@@ -49,13 +49,13 @@ public class ConfigScreen {
                                 .option(Option.<Boolean>createBuilder()
                                         .name(Component.translatable("optical.actionbar.option.freelook"))
                                         .description(OptionDescription.of(Component.translatable("optical.actionbar.option.freelook.desc")))
-                                        .binding(false, OpticalConfig.ACTION_BAR_MESSAGES::isShowFreelookMessage, OpticalConfig.ACTION_BAR_MESSAGES::setShowFreelookMessage)
+                                        .binding(true, OpticalConfig.ACTION_BAR_MESSAGES::isShowFreelookMessage, OpticalConfig.ACTION_BAR_MESSAGES::setShowFreelookMessage)
                                         .controller(TickBoxControllerBuilder::create)
                                         .build())
                                 .option(Option.<Boolean>createBuilder()
                                         .name(Component.translatable("optical.actionbar.option.detached_camera"))
                                         .description(OptionDescription.of(Component.translatable("optical.actionbar.option.detached_camera.desc")))
-                                        .binding(false, OpticalConfig.ACTION_BAR_MESSAGES::isShowDetachedCameraMessage, OpticalConfig.ACTION_BAR_MESSAGES::setShowDetachedCameraMessage)
+                                        .binding(true, OpticalConfig.ACTION_BAR_MESSAGES::isShowDetachedCameraMessage, OpticalConfig.ACTION_BAR_MESSAGES::setShowDetachedCameraMessage)
                                         .controller(TickBoxControllerBuilder::create)
                                         .build())
                                 .build())
@@ -197,22 +197,22 @@ public class ConfigScreen {
                                         .description(OptionDescription.of(Component.translatable("optical.zoom.option.zoom_in_transition.desc")))
                                         .binding(false,
                                                 () -> OpticalConfig.ZOOM.getZoomInTransition() == OpticalConfig.ZoomConfig.TransitionMode.INSTANT,
-                                                val -> OpticalConfig.ZOOM.setZoomInTransition(val ? OpticalConfig.ZoomConfig.TransitionMode.INSTANT : OpticalConfig.ZoomConfig.TransitionMode.EXPONENTIAL))
+                                                val -> OpticalConfig.ZOOM.setZoomInTransition(val ? OpticalConfig.ZoomConfig.TransitionMode.INSTANT : OpticalConfig.ZoomConfig.TransitionMode.SMOOTH))
                                         .controller(opt -> BooleanControllerBuilder.create(opt)
                                                 .formatValue(val -> val
                                                         ? Component.translatable("optical.zoom.value.instant")
-                                                        : Component.translatable("optical.zoom.value.exponential")))
+                                                        : Component.translatable("optical.zoom.value.smooth")))
                                         .build())
                                 .option(Option.<Boolean>createBuilder()
                                         .name(Component.translatable("optical.zoom.option.zoom_out_transition"))
                                         .description(OptionDescription.of(Component.translatable("optical.zoom.option.zoom_out_transition.desc")))
                                         .binding(false,
                                                 () -> OpticalConfig.ZOOM.getZoomOutTransition() == OpticalConfig.ZoomConfig.TransitionMode.INSTANT,
-                                                val -> OpticalConfig.ZOOM.setZoomOutTransition(val ? OpticalConfig.ZoomConfig.TransitionMode.INSTANT : OpticalConfig.ZoomConfig.TransitionMode.EXPONENTIAL))
+                                                val -> OpticalConfig.ZOOM.setZoomOutTransition(val ? OpticalConfig.ZoomConfig.TransitionMode.INSTANT : OpticalConfig.ZoomConfig.TransitionMode.SMOOTH))
                                         .controller(opt -> BooleanControllerBuilder.create(opt)
                                                 .formatValue(val -> val
                                                         ? Component.translatable("optical.zoom.value.instant")
-                                                        : Component.translatable("optical.zoom.value.exponential")))
+                                                        : Component.translatable("optical.zoom.value.smooth")))
                                         .build())
                                 .option(Option.<Double>createBuilder()
                                         .name(Component.translatable("optical.zoom.option.zoom_in_seconds"))
@@ -337,7 +337,7 @@ public class ConfigScreen {
                         .option(Option.<Boolean>createBuilder()
                                 .name(Component.translatable("optical.gamma.option.update_toggle_value"))
                                 .description(OptionDescription.of(Component.translatable("optical.gamma.option.update_toggle_value.desc")))
-                                .binding(false, OpticalConfig.BRIGHTNESS::isUpdateToggleValue, OpticalConfig.BRIGHTNESS::setUpdateToggleValue)
+                                .binding(true, OpticalConfig.BRIGHTNESS::isUpdateToggleValue, OpticalConfig.BRIGHTNESS::setUpdateToggleValue)
                                 .controller(TickBoxControllerBuilder::create)
                                 .build())
                         .build())

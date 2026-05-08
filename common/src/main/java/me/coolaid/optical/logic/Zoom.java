@@ -152,7 +152,7 @@ public final class Zoom {
 
     private static double getTargetStrength() {
         if (isSecondaryZoomActive()) {
-            double easedProgress = easeOutExponential(getSecondaryInProgress());
+            double easedProgress = easeOutSmooth(getSecondaryInProgress());
             double finalStrength = OpticalConfig.ZOOM.getSecondaryZoomStrength();
             return lerp(1.0D, finalStrength, easedProgress);
         }
@@ -170,10 +170,21 @@ public final class Zoom {
 
     private static int clampStepCount(int value) {
         int maxSteps = OpticalConfig.ZOOM.getScrollStepCount();
-        return Math.max(-maxSteps, Math.min(value, maxSteps));
+        int minSteps = Math.max(-maxSteps, getLowestVisibleStep());
+        return Math.max(minSteps, Math.min(value, maxSteps));
     }
 
-    private static double easeOutExponential(double value) {
+    private static int getLowestVisibleStep() {
+        double baseStrength = OpticalConfig.ZOOM.getDefaultZoomStrength();
+        double zoomPerStep = OpticalConfig.ZOOM.getZoomPerStep();
+        if (baseStrength <= 1.0D || zoomPerStep <= 1.0D) {
+            return 0;
+        }
+
+        return (int) Math.floor(Math.log(1.0D / baseStrength) / Math.log(zoomPerStep));
+    }
+
+    private static double easeOutSmooth(double value) {
         if (value >= 1.0D) {
             return 1.0D;
         }
@@ -193,7 +204,7 @@ public final class Zoom {
         double progress = Math.min(1.0D, elapsed / transitionDurationSeconds);
         boolean zoomingOut = transitionTargetStrength < transitionStartStrength;
         double smoothness = zoomingOut ? 1.0D : OpticalConfig.ZOOM.getScrollZoomSmoothness() / 100.0D;
-        double easedProgress = lerp(progress, easeOutExponential(progress), smoothness);
+        double easedProgress = lerp(progress, easeOutSmooth(progress), smoothness);
         return lerp(transitionStartStrength, transitionTargetStrength, easedProgress);
     }
 

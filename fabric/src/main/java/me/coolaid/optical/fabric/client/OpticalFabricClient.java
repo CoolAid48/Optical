@@ -31,6 +31,8 @@ public final class OpticalFabricClient implements ClientModInitializer {
     }
 
     private static void onClientTick(Minecraft minecraft) {
+        OpticalConfig.ensureLoaded();
+
         Freelook.onClientCleanup(minecraft);
         Freecam.onClientCleanup(minecraft);
 

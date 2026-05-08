@@ -9,7 +9,7 @@ public final class KeybindingVisibility {
     }
 
     public static boolean isVisible(KeyMapping mapping) {
-        OpticalConfig.ensureBrightnessLoaded();
+        OpticalConfig.ensureLoaded();
         if (mapping == Keybindings.FREELOOK) {
             return OpticalConfig.FREELOOK.isEnabled();
         }

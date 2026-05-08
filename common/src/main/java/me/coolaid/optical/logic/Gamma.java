@@ -17,7 +17,7 @@ public final class Gamma {
             return;
         }
 
-        OpticalConfig.ensureBrightnessLoaded();
+        OpticalConfig.ensureLoaded();
         ensureCurrentValueInitialized();
 
         if (!OpticalConfig.BRIGHTNESS.isEnabled()) {
@@ -80,7 +80,7 @@ public final class Gamma {
 
     private static void ensureCurrentValueInitialized() {
         if (currentGamma == null) {
-            currentGamma = OpticalConfig.BRIGHTNESS.getDefaultLevel();
+            currentGamma = getTargetGamma();
         }
     }
 
