@@ -51,9 +51,7 @@ public final class OpticalNeoForgeClient {
         Freelook.onClientCleanup(minecraft);
         Freecam.onClientCleanup(minecraft);
 
-        while (Keybindings.FREECAM_TOGGLE.consumeClick()) {
-            Freecam.toggle(minecraft);
-        }
+        Freecam.handleToggleKey(minecraft);
 
         while (Keybindings.DETACH_CAMERA.consumeClick()) {
             Detached.toggle(minecraft);

@@ -25,7 +25,11 @@ public abstract class LevelRendererMixin {
     @Inject(method = "extractVisibleEntities", at = @At("RETURN"))
     private void optical$extractDetachedPlayer(Camera camera, Frustum frustum, DeltaTracker deltaTracker, LevelRenderState renderState, CallbackInfo ci) {
         Minecraft minecraft = Minecraft.getInstance();
-        if ((!Freecam.isActive() && !Detached.isActive()) || minecraft.level == null || minecraft.player == null) {
+        if ((!Freecam.isActive() && !Detached.isActive())
+                || minecraft.level == null
+                || minecraft.player == null
+                || minecraft.player.isRemoved()
+                || (Freecam.isActive() && Freecam.getCameraEntity() == null)) {
             return;
         }
 

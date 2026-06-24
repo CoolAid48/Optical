@@ -5,6 +5,7 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonSyntaxException;
 import com.google.gson.annotations.SerializedName;
 import me.coolaid.optical.Optical;
+import net.minecraft.client.CameraType;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.Mth;
 
@@ -21,6 +22,7 @@ public final class OpticalConfig {
     public static final FreecamConfig FREECAM = new FreecamConfig();
     public static final ZoomConfig ZOOM = new ZoomConfig();
     public static final ActionBarMessagesConfig ACTION_BAR_MESSAGES = new ActionBarMessagesConfig();
+    private static final int CONFIG_VERSION = 2;
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
     private static boolean loaded;
     private static boolean suppressSave;
@@ -96,6 +98,8 @@ public final class OpticalConfig {
     }
 
     private static void applyPersisted(PersistedConfig persisted) {
+        boolean legacyActivationPerspectiveDefault = persisted.version == null || persisted.version < 2;
+
         if (persisted.freelook != null) {
             FreelookPersisted freelook = persisted.freelook;
             if (freelook.enabled != null) FREELOOK.enabled = freelook.enabled;
@@ -115,6 +119,12 @@ public final class OpticalConfig {
             if (freecam.enabled != null) FREECAM.enabled = freecam.enabled;
             if (freecam.invertY != null) FREECAM.invertY = freecam.invertY;
             if (freecam.flightMode != null) FREECAM.flightMode = freecam.flightMode;
+            if (freecam.activationPerspective != null) {
+                FREECAM.activationPerspective = legacyActivationPerspectiveDefault
+                        && freecam.activationPerspective == FreecamConfig.ActivationPerspective.FIRST_PERSON
+                        ? FreecamConfig.ActivationPerspective.THIRD_PERSON
+                        : freecam.activationPerspective;
+            }
             if (freecam.showDetachedPlayerName != null) FREECAM.showDetachedPlayerName = freecam.showDetachedPlayerName;
             if (freecam.showDetachedPlayerHand != null) FREECAM.showDetachedPlayerHand = freecam.showDetachedPlayerHand;
             if (freecam.collisionEnabled != null) FREECAM.collisionEnabled = freecam.collisionEnabled;
@@ -141,6 +151,7 @@ public final class OpticalConfig {
         if (persisted.actionBarMessages != null) {
             ActionBarMessagesPersisted messages = persisted.actionBarMessages;
             if (messages.showGammaMessage != null) ACTION_BAR_MESSAGES.showGammaMessage = messages.showGammaMessage;
+            if (messages.showZoomMessage != null) ACTION_BAR_MESSAGES.showZoomMessage = messages.showZoomMessage;
             if (messages.showFreecamMessage != null) ACTION_BAR_MESSAGES.showFreecamMessage = messages.showFreecamMessage;
             if (messages.showFreelookMessage != null) ACTION_BAR_MESSAGES.showFreelookMessage = messages.showFreelookMessage;
             if (messages.showDetachedCameraMessage != null) ACTION_BAR_MESSAGES.showDetachedCameraMessage = messages.showDetachedCameraMessage;
@@ -158,6 +169,7 @@ public final class OpticalConfig {
         if (persisted.actionBarMessages != null) {
             ActionBarMessagesPersisted messages = persisted.actionBarMessages;
             if (messages.showGammaMessage != null) ACTION_BAR_MESSAGES.showGammaMessage = messages.showGammaMessage;
+            if (messages.showZoomMessage != null) ACTION_BAR_MESSAGES.showZoomMessage = messages.showZoomMessage;
             if (messages.showFreecamMessage != null) ACTION_BAR_MESSAGES.showFreecamMessage = messages.showFreecamMessage;
             if (messages.showFreelookMessage != null) ACTION_BAR_MESSAGES.showFreelookMessage = messages.showFreelookMessage;
             if (messages.showDetachedCameraMessage != null) ACTION_BAR_MESSAGES.showDetachedCameraMessage = messages.showDetachedCameraMessage;
@@ -166,6 +178,7 @@ public final class OpticalConfig {
 
     private static PersistedConfig createPersisted() {
         PersistedConfig persisted = new PersistedConfig();
+        persisted.version = CONFIG_VERSION;
         persisted.freelook = new FreelookPersisted();
         persisted.freelook.enabled = FREELOOK.enabled;
         persisted.freelook.toggleMode = FREELOOK.toggleMode;
@@ -185,6 +198,7 @@ public final class OpticalConfig {
         persisted.freecam.enabled = FREECAM.enabled;
         persisted.freecam.invertY = FREECAM.invertY;
         persisted.freecam.flightMode = FREECAM.flightMode;
+        persisted.freecam.activationPerspective = FREECAM.activationPerspective;
         persisted.freecam.showDetachedPlayerName = FREECAM.showDetachedPlayerName;
         persisted.freecam.showDetachedPlayerHand = FREECAM.showDetachedPlayerHand;
         persisted.freecam.collisionEnabled = FREECAM.collisionEnabled;
@@ -207,6 +221,7 @@ public final class OpticalConfig {
         persisted.zoom.zoomOutTransition = ZOOM.zoomOutTransition;
         persisted.actionBarMessages = new ActionBarMessagesPersisted();
         persisted.actionBarMessages.showGammaMessage = ACTION_BAR_MESSAGES.showGammaMessage;
+        persisted.actionBarMessages.showZoomMessage = ACTION_BAR_MESSAGES.showZoomMessage;
         persisted.actionBarMessages.showFreecamMessage = ACTION_BAR_MESSAGES.showFreecamMessage;
         persisted.actionBarMessages.showFreelookMessage = ACTION_BAR_MESSAGES.showFreelookMessage;
         persisted.actionBarMessages.showDetachedCameraMessage = ACTION_BAR_MESSAGES.showDetachedCameraMessage;
@@ -226,6 +241,7 @@ public final class OpticalConfig {
     }
 
     private static final class PersistedConfig {
+        private Integer version;
         private FreelookPersisted freelook;
         private DetachedCameraPersisted detachedCamera;
         private BrightnessPersisted brightness;
@@ -261,6 +277,7 @@ public final class OpticalConfig {
         private Boolean enabled;
         private Boolean invertY;
         private FreecamConfig.FlightMode flightMode;
+        private FreecamConfig.ActivationPerspective activationPerspective;
         private Boolean showDetachedPlayerName;
         private Boolean showDetachedPlayerHand;
         private Boolean collisionEnabled;
@@ -287,6 +304,7 @@ public final class OpticalConfig {
 
     private static final class ActionBarMessagesPersisted {
         private Boolean showGammaMessage;
+        private Boolean showZoomMessage;
         private Boolean showFreecamMessage;
         private Boolean showFreelookMessage;
         private Boolean showDetachedCameraMessage;
@@ -324,9 +342,32 @@ public final class OpticalConfig {
             CREATIVE
         }
 
+        public enum ActivationPerspective {
+            FIRST_PERSON(CameraType.FIRST_PERSON, "optical.freecam.value.activation_perspective.first_person"),
+            SECOND_PERSON(CameraType.FIRST_PERSON, "optical.freecam.value.activation_perspective.second_person"),
+            THIRD_PERSON(CameraType.FIRST_PERSON, "optical.freecam.value.activation_perspective.third_person");
+
+            private final CameraType cameraType;
+            private final String translationKey;
+
+            ActivationPerspective(CameraType cameraType, String translationKey) {
+                this.cameraType = cameraType;
+                this.translationKey = translationKey;
+            }
+
+            public CameraType getCameraType() {
+                return this.cameraType;
+            }
+
+            public String getTranslationKey() {
+                return this.translationKey;
+            }
+        }
+
         private boolean enabled = true;
         private boolean invertY = false;
         private FlightMode flightMode = FlightMode.DEFAULT;
+        private ActivationPerspective activationPerspective = ActivationPerspective.THIRD_PERSON;
         private boolean showDetachedPlayerName = true;
         private boolean showDetachedPlayerHand = false;
         private boolean collisionEnabled = false;
@@ -339,6 +380,9 @@ public final class OpticalConfig {
         public void setInvertY(boolean invertY) { this.invertY = invertY; OpticalConfig.save(); }
         public FlightMode getFlightMode() { return this.flightMode; }
         public void setFlightMode(FlightMode flightMode) { this.flightMode = flightMode == null ? FlightMode.DEFAULT : flightMode; OpticalConfig.save(); }
+        public ActivationPerspective getActivationPerspective() { return this.activationPerspective; }
+        public void setActivationPerspective(ActivationPerspective activationPerspective) { this.activationPerspective = activationPerspective == null ? ActivationPerspective.THIRD_PERSON : activationPerspective; OpticalConfig.save(); }
+        public CameraType getActivationCameraType() { return this.activationPerspective.getCameraType(); }
         public boolean isShowDetachedPlayerName() { return this.showDetachedPlayerName; }
         public void setShowDetachedPlayerName(boolean showDetachedPlayerName) { this.showDetachedPlayerName = showDetachedPlayerName; OpticalConfig.save(); }
         public boolean isShowDetachedPlayerHand() { return this.showDetachedPlayerHand; }
@@ -378,12 +422,15 @@ public final class OpticalConfig {
 
     public static final class ActionBarMessagesConfig {
         private boolean showGammaMessage = true;
+        private boolean showZoomMessage = true;
         private boolean showFreecamMessage = true;
         private boolean showFreelookMessage = false;
         private boolean showDetachedCameraMessage = false;
 
         public boolean isShowGammaMessage() { return this.showGammaMessage; }
         public void setShowGammaMessage(boolean showGammaMessage) { this.showGammaMessage = showGammaMessage; OpticalConfig.save(); }
+        public boolean isShowZoomMessage() { return this.showZoomMessage; }
+        public void setShowZoomMessage(boolean showZoomMessage) { this.showZoomMessage = showZoomMessage; OpticalConfig.save(); }
         public boolean isShowFreecamMessage() { return this.showFreecamMessage; }
         public void setShowFreecamMessage(boolean showFreecamMessage) { this.showFreecamMessage = showFreecamMessage; OpticalConfig.save(); }
         public boolean isShowFreelookMessage() { return this.showFreelookMessage; }

@@ -2,6 +2,7 @@ package me.coolaid.optical.logic;
 
 import me.coolaid.optical.Keybindings;
 import me.coolaid.optical.config.OpticalConfig;
+import me.coolaid.optical.util.ActionBarMessages;
 import net.minecraft.client.Minecraft;
 
 public final class Zoom {
@@ -17,6 +18,7 @@ public final class Zoom {
     private static double transitionTargetStrength = 1.0D;
     private static double transitionDurationSeconds = 0.0D;
     private static long transitionStartNanos = System.nanoTime();
+    private static double displayedZoomPercent;
     private static boolean forcedHideGui;
 
     private Zoom() {
@@ -73,6 +75,11 @@ public final class Zoom {
 
         double targetStrength = getTargetStrength();
         updateSmoothedStrength(targetStrength);
+        if (shouldShowZoomMessage(targetStrength)) {
+            ActionBarMessages.showZoom(getSmoothedZoomPercent());
+        } else {
+            displayedZoomPercent = 0.0D;
+        }
         return originalFov / currentZoomStrength;
     }
 
@@ -88,6 +95,41 @@ public final class Zoom {
         return secondaryZoomActive;
     }
 
+    private static boolean shouldShowZoomMessage(double targetStrength) {
+        return targetStrength > 1.0001D || currentZoomStrength > 1.0001D;
+    }
+
+    private static int getSmoothedZoomPercent() {
+        double targetPercent = getZoomPercent();
+        displayedZoomPercent += (targetPercent - displayedZoomPercent) * 0.25D;
+        if (Math.abs(targetPercent - displayedZoomPercent) < 0.35D) {
+            displayedZoomPercent = targetPercent;
+        }
+
+        return (int) Math.round(displayedZoomPercent);
+    }
+
+    private static double getZoomPercent() {
+        double fullStrength = getFullMessageStrength();
+        if (fullStrength <= 1.0001D) {
+            return 0;
+        }
+
+        double progress = Math.log(Math.max(1.0D, currentZoomStrength)) / Math.log(fullStrength);
+        return Math.max(0.0D, Math.min(progress, 1.0D)) * 100.0D;
+    }
+
+    private static double getFullMessageStrength() {
+        if (isSecondaryZoomActive() || secondaryRecentlyDeactivated) {
+            return OpticalConfig.ZOOM.getSecondaryZoomStrength();
+        }
+
+        if (!OpticalConfig.ZOOM.isScrollAdjustEnabled()) {
+            return OpticalConfig.ZOOM.getDefaultZoomStrength();
+        }
+
+        return getSteppedStrength(OpticalConfig.ZOOM.getDefaultZoomStrength(), OpticalConfig.ZOOM.getScrollStepCount());
+    }
 
     private static void syncHudVisibility(Minecraft minecraft) {
         if (shouldHideHud()) {
@@ -230,6 +272,7 @@ public final class Zoom {
         transitionTargetStrength = 1.0D;
         transitionDurationSeconds = 0.0D;
         transitionStartNanos = System.nanoTime();
+        displayedZoomPercent = 0.0D;
         forcedHideGui = false;
     }
 }

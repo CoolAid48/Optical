@@ -1,11 +1,10 @@
 # Optical
 ![](https://img.shields.io/badge/Loaders-Fabric/Quilt/NeoForge-darkslateblue?style=for-the-badge)
-![](https://img.shields.io/badge/Versions-26.1.x-darkslateblue?style=for-the-badge)
+![](https://img.shields.io/badge/Versions-26.1.x_|_26.2.x-darkslateblue?style=for-the-badge)
 ![](https://img.shields.io/badge/Environments-Client-darkslateblue?style=for-the-badge)
 
 ### A collection of utilities that gives you full control over your camera perspectives!
 
-## More Details Below:
 <details>
   <summary><b>Freelook allows you to rotate your camera around the player while moving</b></summary>
   <img src="https://cdn.modrinth.com/data/cached_images/7ebbc8f4b746dc358e819d8f5778a92a40cc4d17.gif" alt="optical_freelook">
@@ -37,7 +36,7 @@
 </details>
 
 
-#### Any bugs or issues, please make a report on [GitHub](https://github.com/CoolAid48/Optical/issues)
+#### For any issues or feature requests, please make a report on [GitHub](https://github.com/CoolAid48/Optical/issues)
 
 [<img alt="Support me on Ko-fi" src="https://cdn.jsdelivr.net/npm/@intergrav/devins-badges@3.2.0/assets/cozy/donate/kofi-singular-alt_vector.svg"/>](https://ko-fi.com/coolaid48)
 [<img alt="Chat with me in Discord" src="https://cdn.jsdelivr.net/npm/@intergrav/devins-badges@3.2.0/assets/cozy/social/discord-plural_vector.svg"/>](https://discord.gg/J2SGshKNah)
@@ -48,3 +47,6 @@ Probably not, but maybe. If it's requested then I'm more likely to get around to
 
 ### That being said, does it work on dedicated servers?
 While none of the features have been fully tested in a server environment, the mod itself is fully client-side and there shouldn't be any issues. **However**, some of these tweaks may be considered cheating on servers, and note that I am not responsible for any punishments for violation of server rules using this mod!
+
+## Looking for a server host?
+![server hosting partner](https://cdn.modrinth.com/data/cached_images/8e85210a65b7c17998987c57b7571ba2fbd19bfb.png)

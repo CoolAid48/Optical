@@ -7,6 +7,7 @@ import me.coolaid.optical.logic.Freecam;
 import me.coolaid.optical.logic.Freelook;
 import me.coolaid.optical.logic.Zoom;
 import net.minecraft.client.Camera;
+import net.minecraft.client.CameraType;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.material.FogType;
 import net.minecraft.world.phys.Vec3;
@@ -26,10 +27,13 @@ public abstract class CameraMixin {
     @Shadow protected abstract void move(float x, float y, float z);
     @Shadow protected abstract void setRotation(float yaw, float pitch);
     @Shadow protected abstract void setPosition(double x, double y, double z);
+    @Shadow public abstract Vec3 position();
 
     @Inject(method = "setEntity", at = @At("HEAD"))
     private void optical$syncEyeHeightImmediately(Entity newEntity, CallbackInfo ci) {
-        if (newEntity instanceof me.coolaid.optical.util.FreecamCameraEntity || this.entity instanceof me.coolaid.optical.util.FreecamCameraEntity) {
+        if (newEntity != null
+                && (newEntity instanceof me.coolaid.optical.util.FreecamCameraEntity
+                || this.entity instanceof me.coolaid.optical.util.FreecamCameraEntity)) {
             this.eyeHeightOld = this.eyeHeight = newEntity.getEyeHeight();
         }
     }
@@ -63,9 +67,15 @@ public abstract class CameraMixin {
     @Inject(method = "alignWithEntity", at = @At("RETURN"))
     public void optical$applyFreecamTransform(float f, CallbackInfo ci) {
         if (Freecam.isActive()) {
-            Vec3 position = Freecam.getPosition(f);
-            this.setRotation(Freecam.getYaw(f), Freecam.getPitch(f));
-            this.setPosition(position.x, position.y, position.z);
+            if (Freecam.getActiveCameraType() == CameraType.FIRST_PERSON) {
+                Vec3 position = Freecam.getPosition(f);
+                this.setRotation(Freecam.getYaw(f), Freecam.getPitch(f));
+                this.setPosition(position.x, position.y, position.z);
+                return;
+            }
+
+            Vec3 position = this.position();
+            this.setPosition(position.x, position.y - this.eyeHeight, position.z);
         }
     }
 

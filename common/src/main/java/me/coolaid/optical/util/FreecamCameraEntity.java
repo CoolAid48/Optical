@@ -5,7 +5,6 @@ import me.coolaid.optical.config.OpticalConfig;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.player.AbstractClientPlayer;
-
 import net.minecraft.client.player.ClientInput;
 import net.minecraft.client.player.KeyboardInput;
 import net.minecraft.client.player.LocalPlayer;
@@ -26,15 +25,17 @@ import java.util.UUID;
 
 public final class FreecamCameraEntity extends AbstractClientPlayer {
     private static final double DIAGONAL_MULTIPLIER = Mth.sin((float) Math.toRadians(45));
+    private static final String PROFILE_NAME = "optical_freecam";
 
     public ClientInput input;
     public float yBob;
     public float xBob;
     public float yBobO;
     public float xBobO;
+    private boolean collisionEnabled;
 
     public FreecamCameraEntity(ClientLevel level) {
-        super(level, new GameProfile(UUID.randomUUID(), "optical_freecam"));
+        super(level, new GameProfile(UUID.randomUUID(), PROFILE_NAME));
         this.setPose(Pose.SWIMMING);
         this.setNoGravity(true);
         this.noPhysics = true;
@@ -43,12 +44,18 @@ public final class FreecamCameraEntity extends AbstractClientPlayer {
     }
 
     public void setCollisionEnabled(boolean collisionEnabled) {
+        if (this.collisionEnabled == collisionEnabled) {
+            return;
+        }
+
+        this.collisionEnabled = collisionEnabled;
         this.noPhysics = !collisionEnabled;
         this.refreshDimensions();
     }
 
     @Override
     public void tick() {
+        this.restoreKeyboardInput();
         this.input.tick();
         this.doFreecamMotion();
         super.tick();
@@ -172,6 +179,12 @@ public final class FreecamCameraEntity extends AbstractClientPlayer {
         this.xBobO = this.xBob;
         this.xBob += (this.getXRot() - this.xBob) * 0.5F;
         this.yBob += (this.getYRot() - this.yBob) * 0.5F;
+    }
+
+    private void restoreKeyboardInput() {
+        if (!(this.input instanceof KeyboardInput)) {
+            this.input = new KeyboardInput(Minecraft.getInstance().options);
+        }
     }
 
     private void doFreecamMotion() {

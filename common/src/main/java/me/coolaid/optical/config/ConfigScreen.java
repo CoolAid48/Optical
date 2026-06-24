@@ -2,6 +2,7 @@ package me.coolaid.optical.config;
 
 import dev.isxander.yacl3.api.*;
 import dev.isxander.yacl3.api.controller.BooleanControllerBuilder;
+import dev.isxander.yacl3.api.controller.CyclingListControllerBuilder;
 import dev.isxander.yacl3.api.controller.DoubleSliderControllerBuilder;
 import dev.isxander.yacl3.api.controller.IntegerSliderControllerBuilder;
 import dev.isxander.yacl3.api.controller.IntegerFieldControllerBuilder;
@@ -38,6 +39,12 @@ public class ConfigScreen {
                                         .name(Component.translatable("optical.actionbar.option.gamma"))
                                         .description(OptionDescription.of(Component.translatable("optical.actionbar.option.gamma.desc")))
                                         .binding(true, OpticalConfig.ACTION_BAR_MESSAGES::isShowGammaMessage, OpticalConfig.ACTION_BAR_MESSAGES::setShowGammaMessage)
+                                        .controller(TickBoxControllerBuilder::create)
+                                        .build())
+                                .option(Option.<Boolean>createBuilder()
+                                        .name(Component.translatable("optical.actionbar.option.zoom"))
+                                        .description(OptionDescription.of(Component.translatable("optical.actionbar.option.zoom.desc")))
+                                        .binding(true, OpticalConfig.ACTION_BAR_MESSAGES::isShowZoomMessage, OpticalConfig.ACTION_BAR_MESSAGES::setShowZoomMessage)
                                         .controller(TickBoxControllerBuilder::create)
                                         .build())
                                 .option(Option.<Boolean>createBuilder()
@@ -115,6 +122,14 @@ public class ConfigScreen {
                                         .description(OptionDescription.of(Component.translatable("optical.freecam.option.enabled.desc")))
                                         .binding(true, OpticalConfig.FREECAM::isEnabled, OpticalConfig.FREECAM::setEnabled)
                                         .controller(TickBoxControllerBuilder::create)
+                                        .build())
+                                .option(Option.<OpticalConfig.FreecamConfig.ActivationPerspective>createBuilder()
+                                        .name(Component.translatable("optical.freecam.option.activation_perspective"))
+                                        .description(OptionDescription.of(Component.translatable("optical.freecam.option.activation_perspective.desc")))
+                                        .binding(OpticalConfig.FreecamConfig.ActivationPerspective.FIRST_PERSON, OpticalConfig.FREECAM::getActivationPerspective, OpticalConfig.FREECAM::setActivationPerspective)
+                                        .controller(opt -> CyclingListControllerBuilder.create(opt)
+                                                .values(OpticalConfig.FreecamConfig.ActivationPerspective.values())
+                                                .formatValue(value -> Component.translatable(value.getTranslationKey())))
                                         .build())
                                 .option(Option.<Boolean>createBuilder()
                                         .name(Component.translatable("optical.freecam.option.invert"))

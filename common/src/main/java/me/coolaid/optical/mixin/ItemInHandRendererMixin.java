@@ -65,8 +65,12 @@ public class ItemInHandRendererMixin {
     @ModifyVariable(method = "renderHandsWithItems", at = @At("HEAD"), argsOnly = true)
     private int optical$lightHandsFromFreecam(int lightCoords) {
         FreecamCameraEntity camera = Freecam.getCameraEntity();
-        if (Freecam.isActive() && camera != null) {
-            return Minecraft.getInstance().getEntityRenderDispatcher().getPackedLightCoords(camera, this.optical$tickDelta);
+        Minecraft minecraft = Minecraft.getInstance();
+        if (Freecam.isActive()
+                && camera != null
+                && !camera.isRemoved()
+                && camera.level() == minecraft.level) {
+            return minecraft.getEntityRenderDispatcher().getPackedLightCoords(camera, this.optical$tickDelta);
         }
         return lightCoords;
     }
