@@ -28,12 +28,13 @@
   ],
   "depends": {
     "fabricloader": ">=0.18.4",
-    "minecraft": ">=26.1",
+    "minecraft": "~26.2",
     "fabric-api": "*"
   },
   "custom": {
     "modmenu": {
       "links": {
+        "modmenu.wiki": "https://coolaid.live/docs/optical",
         "modmenu.donate": "https://ko-fi.com/coolaid48",
         "modmenu.discord": "https://discord.gg/J2SGshKNah",
         "modmenu.modrinth": "https://modrinth.com/mod/optical"

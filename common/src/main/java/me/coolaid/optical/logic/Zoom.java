@@ -19,7 +19,6 @@ public final class Zoom {
     private static double transitionDurationSeconds = 0.0D;
     private static long transitionStartNanos = System.nanoTime();
     private static double displayedZoomPercent;
-    private static boolean forcedHideGui;
 
     private Zoom() {
     }
@@ -30,7 +29,6 @@ public final class Zoom {
         }
 
         if (!OpticalConfig.ZOOM.isEnabled()) {
-            restoreHudVisibilityIfForced(minecraft);
             resetState();
             return;
         }
@@ -51,7 +49,6 @@ public final class Zoom {
         }
 
         wasPrimaryZoomActive = primaryActive;
-        syncHudVisibility(minecraft);
     }
 
     public static boolean handleScroll(double yOffset) {
@@ -129,25 +126,6 @@ public final class Zoom {
         }
 
         return getSteppedStrength(OpticalConfig.ZOOM.getDefaultZoomStrength(), OpticalConfig.ZOOM.getScrollStepCount());
-    }
-
-    private static void syncHudVisibility(Minecraft minecraft) {
-        if (shouldHideHud()) {
-            if (!minecraft.options.hideGui) {
-                minecraft.options.hideGui = true;
-                forcedHideGui = true;
-            }
-            return;
-        }
-
-        restoreHudVisibilityIfForced(minecraft);
-    }
-
-    private static void restoreHudVisibilityIfForced(Minecraft minecraft) {
-        if (forcedHideGui) {
-            minecraft.options.hideGui = false;
-            forcedHideGui = false;
-        }
     }
 
     private static void updateSmoothedStrength(double targetStrength) {
@@ -273,6 +251,5 @@ public final class Zoom {
         transitionDurationSeconds = 0.0D;
         transitionStartNanos = System.nanoTime();
         displayedZoomPercent = 0.0D;
-        forcedHideGui = false;
     }
 }

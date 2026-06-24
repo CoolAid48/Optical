@@ -290,7 +290,7 @@ public final class Freecam {
             );
         }
 
-        Camera camera = minecraft.gameRenderer.getMainCamera();
+        Camera camera = minecraft.gameRenderer.mainCamera();
         return new TripodPosition(
                 camera.position(),
                 camera.yRot(),

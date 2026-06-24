@@ -60,7 +60,7 @@ public final class Detached {
 
     private static void activate(Minecraft minecraft) {
         if (minecraft.player == null || minecraft.level == null || Freecam.isActive()) return;
-        Camera camera = minecraft.gameRenderer.getMainCamera();
+        Camera camera = minecraft.gameRenderer.mainCamera();
         position = camera.position();
         yaw = camera.yRot();
         pitch = camera.xRot();
