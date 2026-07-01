@@ -10,7 +10,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(LocalPlayer.class)
 public class LocalPlayerMixin {
-    @Inject(method = "isControlledCamera", at = @At("HEAD"), cancellable = true)
+    @Inject(method = "isControlledCamera()Z", at = @At("HEAD"), cancellable = true)
     private void optical$markPlayerAsControlledCamera(CallbackInfoReturnable<Boolean> cir) {
         if (Freecam.isActive() && (Object) this == Minecraft.getInstance().player) {
             cir.setReturnValue(true);

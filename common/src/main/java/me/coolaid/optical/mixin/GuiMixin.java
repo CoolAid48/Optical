@@ -16,13 +16,14 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public class GuiMixin {
     @Shadow @Final private GuiRenderState guiRenderState;
 
-    @ModifyVariable(method = "extractRenderState", at = @At("HEAD"), ordinal = 0, argsOnly = true)
+    @ModifyVariable(method = "extractRenderState(Lnet/minecraft/client/DeltaTracker;ZZ)V", at = @At("HEAD"), ordinal = 0, argsOnly = true, require = 0)
     private boolean optical$hideHudInAlternateZoom(boolean hudVisible) {
         return hudVisible && !Zoom.shouldHideHud();
     }
 
     @Inject(
-            method = "extractRenderState",
+            method = "extractRenderState(Lnet/minecraft/client/DeltaTracker;ZZ)V",
+            require = 0,
             at = @At(
                     value = "INVOKE",
                     target = "Lnet/minecraft/client/renderer/state/gui/GuiRenderState;reset()V",

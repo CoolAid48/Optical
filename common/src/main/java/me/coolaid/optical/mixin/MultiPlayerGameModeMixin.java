@@ -15,14 +15,14 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(MultiPlayerGameMode.class)
 public class MultiPlayerGameModeMixin {
-    @Inject(method = "interact", at = @At("HEAD"), cancellable = true)
+    @Inject(method = "interact(Lnet/minecraft/world/entity/player/Player;Lnet/minecraft/world/entity/Entity;Lnet/minecraft/world/phys/EntityHitResult;Lnet/minecraft/world/InteractionHand;)Lnet/minecraft/world/InteractionResult;", at = @At("HEAD"), cancellable = true)
     private void optical$preventEntityInteractionInFreecam(Player player, Entity entity, EntityHitResult hitResult, InteractionHand hand, CallbackInfoReturnable<InteractionResult> cir) {
         if (entity == Minecraft.getInstance().player) {
             cir.setReturnValue(InteractionResult.PASS);
         }
     }
 
-    @Inject(method = "attack", at = @At("HEAD"), cancellable = true)
+    @Inject(method = "attack(Lnet/minecraft/world/entity/player/Player;Lnet/minecraft/world/entity/Entity;)V", at = @At("HEAD"), cancellable = true)
     private void optical$preventSelfAttack(Player player, Entity target, CallbackInfo ci) {
         if (target == Minecraft.getInstance().player) {
             ci.cancel();

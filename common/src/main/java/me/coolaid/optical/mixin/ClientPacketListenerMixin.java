@@ -11,7 +11,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(ClientPacketListener.class)
 public class ClientPacketListenerMixin {
-    @Inject(method = "handleRespawn", at = @At("HEAD"))
+    @Inject(method = "handleRespawn(Lnet/minecraft/network/protocol/game/ClientboundRespawnPacket;)V", at = @At("HEAD"))
     private void optical$disableFreecamBeforeRespawn(ClientboundRespawnPacket packet, CallbackInfo ci) {
         Freecam.deactivate(Minecraft.getInstance());
     }

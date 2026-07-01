@@ -12,7 +12,7 @@ import java.util.Arrays;
 
 @Mixin(KeyBindsList.class)
 public class KeyBindsListMixin {
-    @Redirect(method = "<init>", at = @At(value = "FIELD", target = "Lnet/minecraft/client/Options;keyMappings:[Lnet/minecraft/client/KeyMapping;"))
+    @Redirect(method = "<init>", at = @At(value = "FIELD", target = "Lnet/minecraft/client/Options;keyMappings:[Lnet/minecraft/client/KeyMapping;"), require = 0)
     private KeyMapping[] optical$hideDisabledFeatureKeybinds(Options options) {
         return Arrays.stream(options.keyMappings)
                 .filter(KeybindingVisibility::isVisible)

@@ -26,7 +26,7 @@ public class EntityMixin implements CameraOverriddenEntity {
     @Unique
     private boolean optical$hasAnchor = false;
 
-    @Inject(method = "turn", at = @At("HEAD"), cancellable = true)
+    @Inject(method = "turn(DD)V", at = @At("HEAD"), cancellable = true)
     public void onTurn(double xDelta, double yDelta, CallbackInfo ci) {
         if (Freecam.shouldControlCamera() && (Object) this == Minecraft.getInstance().player) {
             Freecam.addLookDelta(xDelta, yDelta);

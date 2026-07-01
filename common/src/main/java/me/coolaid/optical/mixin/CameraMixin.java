@@ -29,7 +29,7 @@ public abstract class CameraMixin {
     @Shadow protected abstract void setPosition(double x, double y, double z);
     @Shadow public abstract Vec3 position();
 
-    @Inject(method = "setEntity", at = @At("HEAD"))
+    @Inject(method = "setEntity(Lnet/minecraft/world/entity/Entity;)V", at = @At("HEAD"))
     private void optical$syncEyeHeightImmediately(Entity newEntity, CallbackInfo ci) {
         if (newEntity != null
                 && (newEntity instanceof me.coolaid.optical.util.FreecamCameraEntity
@@ -38,7 +38,7 @@ public abstract class CameraMixin {
         }
     }
 
-    @Inject(method = "alignWithEntity", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/Camera;setRotation(FF)V", ordinal = 1, shift = At.Shift.AFTER))
+    @Inject(method = "alignWithEntity(F)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/Camera;setRotation(FF)V", ordinal = 1, shift = At.Shift.AFTER))
     public void optical$applyFreelookRotation(float f, CallbackInfo ci) {
         if (Freelook.isActive() && this.entity instanceof CameraOverriddenEntity ce) {
             this.setRotation(ce.optical$getCameraYaw(), ce.optical$getCameraPitch());
@@ -46,7 +46,7 @@ public abstract class CameraMixin {
     }
 
     @Redirect(
-            method = "alignWithEntity",
+            method = "alignWithEntity(F)V",
             at = @At(value = "INVOKE", target = "Lnet/minecraft/client/Camera;move(FFF)V", ordinal = 0)
     )
     private void optical$skipVanillaMoveWhenDetached(Camera camera, float x, float y, float z) {
@@ -55,7 +55,7 @@ public abstract class CameraMixin {
         }
     }
 
-    @Inject(method = "alignWithEntity", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/Camera;setPosition(DDD)V", shift = At.Shift.AFTER))
+    @Inject(method = "alignWithEntity(F)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/Camera;setPosition(DDD)V", shift = At.Shift.AFTER))
     public void optical$applyDetachedCameraTransform(float f, CallbackInfo ci) {
         if (Detached.isActive() && !Freecam.isActive()) {
             Vec3 position = Detached.getPosition();
@@ -64,7 +64,7 @@ public abstract class CameraMixin {
         }
     }
 
-    @Inject(method = "alignWithEntity", at = @At("RETURN"))
+    @Inject(method = "alignWithEntity(F)V", at = @At("RETURN"))
     public void optical$applyFreecamTransform(float f, CallbackInfo ci) {
         if (Freecam.isActive()) {
             if (Freecam.getActiveCameraType() == CameraType.FIRST_PERSON) {
@@ -79,20 +79,20 @@ public abstract class CameraMixin {
         }
     }
 
-    @Inject(method = "getFluidInCamera", at = @At("HEAD"), cancellable = true)
+    @Inject(method = "getFluidInCamera()Lnet/minecraft/world/level/material/FogType;", at = @At("HEAD"), cancellable = true)
     private void optical$hideSubmersionFogInFreecam(CallbackInfoReturnable<FogType> cir) {
         if (Freecam.isActive() && !OpticalConfig.FREECAM.isCollisionEnabled()) {
             cir.setReturnValue(FogType.NONE);
         }
     }
 
-    @Inject(method = "calculateFov", at = @At("RETURN"), cancellable = true)
-    private void optical$applyZoomToWorldFov(CallbackInfoReturnable<Float> cir) {
+    @Inject(method = "calculateFov(F)F", at = @At("RETURN"), cancellable = true)
+    private void optical$applyZoomToWorldFov(float partialTick, CallbackInfoReturnable<Float> cir) {
         cir.setReturnValue((float) Zoom.applyZoomFov(cir.getReturnValueF()));
     }
 
-    @Inject(method = "calculateHudFov", at = @At("RETURN"), cancellable = true)
-    private void optical$applyZoomToHudFov(CallbackInfoReturnable<Float> cir) {
+    @Inject(method = "calculateHudFov(F)F", at = @At("RETURN"), cancellable = true)
+    private void optical$applyZoomToHudFov(float partialTick, CallbackInfoReturnable<Float> cir) {
         cir.setReturnValue((float) Zoom.applyZoomFov(cir.getReturnValueF()));
     }
 }

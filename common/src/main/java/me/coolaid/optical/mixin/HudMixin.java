@@ -14,14 +14,14 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(Hud.class)
 public class HudMixin {
-    @Inject(method = "getCameraPlayer", at = @At("HEAD"), cancellable = true)
+    @Inject(method = "getCameraPlayer()Lnet/minecraft/world/entity/player/Player;", at = @At("HEAD"), cancellable = true, require = 0)
     private void optical$usePlayerForHud(CallbackInfoReturnable<Player> cir) {
         if (Freecam.isActive()) {
             cir.setReturnValue(Minecraft.getInstance().player);
         }
     }
 
-    @Inject(method = "extractTextureOverlay", at = @At("HEAD"), cancellable = true)
+    @Inject(method = "extractTextureOverlay(Lnet/minecraft/client/gui/GuiGraphicsExtractor;Lnet/minecraft/resources/Identifier;F)V", at = @At("HEAD"), cancellable = true, require = 0)
     private void optical$hideEquippedOverlayInFreecam(GuiGraphicsExtractor graphics, Identifier texture, float alpha, CallbackInfo ci) {
         if (Freecam.isActive()) {
             ci.cancel();

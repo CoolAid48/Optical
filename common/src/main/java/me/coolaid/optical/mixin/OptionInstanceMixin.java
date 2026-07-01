@@ -19,7 +19,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 public class OptionInstanceMixin {
     @Shadow @Final Component caption;
 
-    @Inject(method = "get", at = @At("HEAD"), cancellable = true)
+    @Inject(method = "get()Ljava/lang/Object;", at = @At("HEAD"), cancellable = true)
     private void optical$overrideGamma(CallbackInfoReturnable<Object> cir) {
         if (!GammaOverrideState.suspendGammaOverride
                 && OpticalConfig.BRIGHTNESS.isEnabled()
@@ -28,7 +28,7 @@ public class OptionInstanceMixin {
         }
     }
 
-    @Inject(method = "set", at = @At("HEAD"), cancellable = true)
+    @Inject(method = "set(Ljava/lang/Object;)V", at = @At("HEAD"), cancellable = true)
     private void optical$ignoreVanillaGammaSet(Object value, CallbackInfo ci) {
         if (OpticalConfig.BRIGHTNESS.isEnabled() && optical$isGammaOption()) {
             ci.cancel();

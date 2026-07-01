@@ -20,7 +20,7 @@ public class MinecraftMixin {
         return entity;
     }
 
-    @Inject(method = "disconnect*", at = @At("HEAD"))
+    @Inject(method = "disconnect*", at = @At("HEAD"), require = 0)
     private void optical$disableFreecamOnDisconnect(CallbackInfo ci) {
         Freecam.onDisconnect((Minecraft) (Object) this);
         Detached.onDisconnect();
