@@ -9,7 +9,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(CameraType.class)
 public class CameraTypeMixin {
-    @Inject(method = "cycle", at = @At("HEAD"))
+    @Inject(method = "cycle()Lnet/minecraft/client/CameraType;", at = @At("HEAD"))
     private void optical$disableDetachedCameraOnPerspectiveCycle(CallbackInfoReturnable<CameraType> cir) {
         Detached.deactivate();
     }

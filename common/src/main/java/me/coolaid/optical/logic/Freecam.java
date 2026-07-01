@@ -45,7 +45,9 @@ public final class Freecam {
     public static boolean isActive() { return active; }
     public static boolean shouldRenderPlayerName() { return OpticalConfig.FREECAM.isShowDetachedPlayerName(); }
     public static boolean shouldRenderPlayerHand() { return OpticalConfig.FREECAM.isShowDetachedPlayerHand(); }
-    public static boolean shouldControlCamera() { return active && cameraEntity != null; }
+    public static boolean shouldControlCamera() {
+        return active && cameraEntity != null && !cameraEntity.isRemoved();
+    }
     public static CameraType getActiveCameraType() { return activePerspective; }
     public static Vec3 getPosition(float partialTick) {
         if (cameraEntity == null) return Vec3.ZERO;
@@ -77,14 +79,7 @@ public final class Freecam {
 
         cameraEntity.setXRot(pitch);
         cameraEntity.setYRot(cameraEntity.getYRot() + yawDelta);
-        cameraEntity.xRotO = cameraEntity.getXRot();
-        cameraEntity.yRotO = cameraEntity.getYRot();
-        cameraEntity.yHeadRot = cameraEntity.getYRot();
-        cameraEntity.yHeadRotO = cameraEntity.getYRot();
-        cameraEntity.yBodyRot = cameraEntity.getYRot();
-        cameraEntity.yBodyRotO = cameraEntity.getYRot();
-        cameraEntity.xBob = cameraEntity.xBobO = cameraEntity.getXRot();
-        cameraEntity.yBob = cameraEntity.yBobO = cameraEntity.getYRot();
+        snapCameraRotation(cameraEntity);
     }
 
     public static void toggle(Minecraft minecraft) {
@@ -207,6 +202,7 @@ public final class Freecam {
         if (cameraEntity != null) { cameraEntity.remove(Entity.RemovalReason.DISCARDED); cameraEntity = null; }
         if (minecraft.player != null) minecraft.player.input = new KeyboardInput(minecraft.options);
         if (lastPerspective != null && minecraft.options.getCameraType() != lastPerspective) setCameraType(minecraft, lastPerspective);
+        resetTransientState();
         if (closingTripodSlot != 0) {
             ActionBarMessages.showFreecamTripodClosing(closingTripodSlot);
         } else {
@@ -323,23 +319,23 @@ public final class Freecam {
 
     private static Vec3 getActivationPosition(Minecraft minecraft, OpticalConfig.FreecamConfig.ActivationPerspective perspective) {
         Vec3 eyePosition = minecraft.player.getEyePosition();
-        Vec3 bodyDirection = Vec3.directionFromRotation(0.0F, minecraft.player.yBodyRot);
+        Vec3 viewDirection = Vec3.directionFromRotation(0.0F, minecraft.player.getYRot());
 
         return switch (perspective) {
             case FIRST_PERSON -> eyePosition;
-            case SECOND_PERSON -> eyePosition.add(bodyDirection.scale(4.0D));
-            case THIRD_PERSON -> eyePosition.add(bodyDirection.scale(-4.0D));
+            case SECOND_PERSON -> eyePosition.add(viewDirection.scale(4.0D));
+            case THIRD_PERSON -> eyePosition.add(viewDirection.scale(-4.0D));
         };
     }
 
     private static float getActivationYaw(Minecraft minecraft, OpticalConfig.FreecamConfig.ActivationPerspective perspective) {
         return perspective == OpticalConfig.FreecamConfig.ActivationPerspective.SECOND_PERSON
-                ? Mth.wrapDegrees(minecraft.player.yBodyRot + 180.0F)
-                : minecraft.player.yBodyRot;
+                ? Mth.wrapDegrees(minecraft.player.getYRot() + 180.0F)
+                : minecraft.player.getYRot();
     }
 
     private static float getActivationPitch(Minecraft minecraft, OpticalConfig.FreecamConfig.ActivationPerspective perspective) {
-        return 0.0F;
+        return minecraft.player.getXRot();
     }
 
     private static int getSelectedHotbarSlot(Minecraft minecraft) {
@@ -392,6 +388,10 @@ public final class Freecam {
         camera.xo = camera.getX();
         camera.yo = camera.getY();
         camera.zo = camera.getZ();
+        snapCameraRotation(camera);
+    }
+
+    private static void snapCameraRotation(FreecamCameraEntity camera) {
         camera.xRotO = camera.getXRot();
         camera.yRotO = camera.getYRot();
         camera.yHeadRot = camera.getYRot();
@@ -400,6 +400,13 @@ public final class Freecam {
         camera.yBodyRotO = camera.getYRot();
         camera.xBob = camera.xBobO = camera.getXRot();
         camera.yBob = camera.yBobO = camera.getYRot();
+    }
+
+    private static void resetTransientState() {
+        freecamTogglePending = false;
+        lastTripodHotkeySlot = 0;
+        selectedHotbarSlotBeforeTick = -1;
+        lastPerspective = null;
     }
 
     private record TripodPosition(Vec3 position, float yaw, float pitch, CameraType cameraType) {

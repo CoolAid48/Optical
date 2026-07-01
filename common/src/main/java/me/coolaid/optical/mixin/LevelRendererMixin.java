@@ -22,7 +22,7 @@ public abstract class LevelRendererMixin {
     @Shadow
     protected abstract EntityRenderState extractEntity(Entity entity, float partialTick);
 
-    @Inject(method = "extractVisibleEntities", at = @At("RETURN"))
+    @Inject(method = "extractVisibleEntities(Lnet/minecraft/client/Camera;Lnet/minecraft/client/renderer/culling/Frustum;Lnet/minecraft/client/DeltaTracker;Lnet/minecraft/client/renderer/state/level/LevelRenderState;)V", at = @At("RETURN"), require = 0)
     private void optical$extractDetachedPlayer(Camera camera, Frustum frustum, DeltaTracker deltaTracker, LevelRenderState renderState, CallbackInfo ci) {
         Minecraft minecraft = Minecraft.getInstance();
         if ((!Freecam.isActive() && !Detached.isActive())

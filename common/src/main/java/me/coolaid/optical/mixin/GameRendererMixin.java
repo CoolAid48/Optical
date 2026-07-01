@@ -7,6 +7,7 @@ import me.coolaid.optical.logic.Zoom;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.state.GameRenderState;
 import net.minecraft.client.renderer.state.level.CameraRenderState;
+import org.joml.Matrix4fc;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -18,21 +19,21 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public class GameRendererMixin {
     @Shadow @Final private GameRenderState gameRenderState;
 
-    @Inject(method = "extractOptions", at = @At("TAIL"))
+    @Inject(method = "extractOptions()V", at = @At("TAIL"), require = 0)
     private void optical$hideHudInAlternateZoom(CallbackInfo ci) {
         if (Zoom.shouldHideHud()) {
             this.gameRenderState.optionsRenderState.hideGui = true;
         }
     }
 
-    @Inject(method = "renderItemInHand", at = @At("HEAD"), cancellable = true)
-    private void optical$hideDetachedPlayerHand(CallbackInfo ci) {
+    @Inject(method = "renderItemInHand(Lnet/minecraft/client/renderer/state/level/CameraRenderState;FLorg/joml/Matrix4fc;)V", at = @At("HEAD"), cancellable = true, require = 0)
+    private void optical$hideDetachedPlayerHand(CameraRenderState cameraState, float partialTick, Matrix4fc pose, CallbackInfo ci) {
         if (Detached.isActive() || (Freecam.isActive() && !Freecam.shouldRenderPlayerHand())) {
             ci.cancel();
         }
     }
 
-    @Inject(method = "bobView", at = @At("HEAD"), cancellable = true)
+    @Inject(method = "bobView(Lnet/minecraft/client/renderer/state/level/CameraRenderState;Lcom/mojang/blaze3d/vertex/PoseStack;)V", at = @At("HEAD"), cancellable = true, require = 0)
     private void optical$disableViewBobWhenCameraDetached(CameraRenderState cameraState, PoseStack poseStack, CallbackInfo ci) {
         if (Detached.isActive()) {
             ci.cancel();

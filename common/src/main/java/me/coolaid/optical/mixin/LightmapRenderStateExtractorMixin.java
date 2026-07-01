@@ -11,7 +11,8 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 public class LightmapRenderStateExtractorMixin {
     @Redirect(
             method = "extract",
-            at = @At(value = "INVOKE", target = "Ljava/lang/Math;max(FF)F", ordinal = 0)
+            at = @At(value = "INVOKE", target = "Ljava/lang/Math;max(FF)F", ordinal = 0),
+            require = 0
     )
     private float optical$allowNegativeGamma(float first, float second) {
         if (!OpticalConfig.BRIGHTNESS.isEnabled()) {

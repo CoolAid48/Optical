@@ -10,8 +10,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(LivingEntity.class)
 public class LivingEntityMixin {
-    @Inject(method = "getFrictionInfluencedSpeed", at = @At("HEAD"), cancellable = true)
-    private void optical$useConfiguredCreativeFreecamSpeed(CallbackInfoReturnable<Float> cir) {
+    @Inject(method = "getFrictionInfluencedSpeed(F)F", at = @At("HEAD"), cancellable = true, require = 0)
+    private void optical$useConfiguredCreativeFreecamSpeed(float friction, CallbackInfoReturnable<Float> cir) {
         if (Freecam.isActive()
                 && Freecam.getCameraEntity() == (Object) this
                 && OpticalConfig.FREECAM.getFlightMode() == OpticalConfig.FreecamConfig.FlightMode.CREATIVE) {
